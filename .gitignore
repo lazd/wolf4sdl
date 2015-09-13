@@ -213,3 +213,8 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+build
+Wolf4SDL.xccheckout
+macosx/Wolf4SDL.xcodeproj/project.xcworkspace/xcuserdata
+macosx/Wolf4SDL.xcodeproj/xcuserdata
