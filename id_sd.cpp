@@ -99,9 +99,9 @@ static  digiinfo               *DigiList;
 static  boolean                 DigiPlaying;
 
 //      PC Sound variables
-static  volatile byte           pcLastSample;
+//static  volatile byte           pcLastSample;
 static  byte * volatile         pcSound;
-static  longword                pcLengthLeft;
+//static  longword                pcLengthLeft;
 
 //      AdLib variables
 static  byte * volatile         alSound;
@@ -557,6 +557,8 @@ SD_StopDigitized(void)
 //            SDL_SBStopSampleInIRQ();
             Mix_HaltChannel(-1);
             break;
+        default:
+            break;
     }
 }
 
@@ -583,6 +585,8 @@ void SD_SetPosition(int channel, int leftpos, int rightpos)
 //            SDL_PositionSBP(leftpos,rightpos);
             Mix_SetPanning(channel, ((15 - leftpos) << 4) + 15,
                 ((15 - rightpos) << 4) + 15);
+            break;
+        default:
             break;
     }
 }
@@ -698,6 +702,8 @@ SD_SetDigiDevice(SDSMode mode)
         case sds_SoundBlaster:
             if (!SoundBlasterPresent)
                 devicenotpresent = true;
+            break;
+        default:
             break;
     }
 
@@ -849,6 +855,7 @@ SDL_ShutAL(void)
 //      SDL_CleanAL() - Totally shuts down the AdLib card
 //
 ///////////////////////////////////////////////////////////////////////////
+#if 0
 static void
 SDL_CleanAL(void)
 {
@@ -858,7 +865,7 @@ SDL_CleanAL(void)
     for (i = 1; i < 0xf5; i++)
         alOut(i, 0);
 }
-
+#endif
 ///////////////////////////////////////////////////////////////////////////
 //
 //      SDL_StartAL() - Starts up the AdLib card for sound effects
@@ -877,6 +884,8 @@ SDL_StartAL(void)
 //              emulating an AdLib) present
 //
 ///////////////////////////////////////////////////////////////////////////
+
+#if 0
 static boolean
 SDL_DetectAdLib(void)
 {
@@ -888,6 +897,7 @@ SDL_DetectAdLib(void)
 
     return true;
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////
 //
@@ -905,6 +915,8 @@ SDL_ShutDevice(void)
         case sdm_AdLib:
             SDL_ShutAL();
             break;
+        default:
+            break;
     }
     SoundMode = sdm_Off;
 }
@@ -914,13 +926,14 @@ SDL_ShutDevice(void)
 //      SDL_CleanDevice() - totally shuts down all sound devices
 //
 ///////////////////////////////////////////////////////////////////////////
+#if 0
 static void
 SDL_CleanDevice(void)
 {
     if ((SoundMode == sdm_AdLib) || (MusicMode == smm_AdLib))
         SDL_CleanAL();
 }
-
+#endif
 ///////////////////////////////////////////////////////////////////////////
 //
 //      SDL_StartDevice() - turns on whatever device is to be used for sound fx
@@ -933,6 +946,8 @@ SDL_StartDevice(void)
     {
         case sdm_AdLib:
             SDL_StartAL();
+            break;
+        default:
             break;
     }
     SoundNumber = (soundnames) 0;
@@ -1216,7 +1231,7 @@ SD_PlaySound(soundnames sound)
     ispos = nextsoundpos;
     nextsoundpos = false;
 
-    if (sound == -1 || (DigiMode == sds_Off && SoundMode == sdm_Off))
+    if ((int)sound == -1 || (DigiMode == sds_Off && SoundMode == sdm_Off))
         return 0;
 
     s = (SoundCommon *) SoundTable[sound];
@@ -1275,6 +1290,8 @@ SD_PlaySound(soundnames sound)
         case sdm_AdLib:
             SDL_ALPlaySound((AdLibSound *)s);
             break;
+        default:
+            break;
     }
 
     SoundNumber = sound;
@@ -1302,6 +1319,8 @@ SD_SoundPlaying(void)
         case sdm_AdLib:
             result = alSound? true : false;
             break;
+        default:
+            break;
     }
 
     if (result)
@@ -1328,6 +1347,8 @@ SD_StopSound(void)
             break;
         case sdm_AdLib:
             SDL_ALStopSound();
+            break;
+        default:
             break;
     }
 
@@ -1377,6 +1398,8 @@ SD_MusicOff(void)
             alOut(alEffects, 0);
             for (i = 0;i < sqMaxTracks;i++)
                 alOut(alFreqH + i + 1, 0);
+            break;
+        default:
             break;
     }
 
@@ -1459,6 +1482,8 @@ SD_FadeOutMusic(void)
         case smm_AdLib:
             // DEBUG - quick hack to turn the music off
             SD_MusicOff();
+            break;
+        default:
             break;
     }
 }

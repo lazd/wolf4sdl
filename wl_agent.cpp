@@ -1268,6 +1268,8 @@ void    GunAttack (objtype *ob)
         case wp_chaingun:
             SD_PlaySound (ATKGATLINGSND);
             break;
+        default:
+            break;
     }
 
     madenoise = true;

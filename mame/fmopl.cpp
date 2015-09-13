@@ -1960,7 +1960,7 @@ static void OPLSetUpdateHandler(FM_OPL *OPL,OPL_UPDATEHANDLER UpdateHandler,int 
 }
 
 #if defined(BUILD_YM3526) || defined(BUILD_Y8950)
-
+#if 0   // unused
 static int OPLWrite(FM_OPL *OPL,int a,int v)
 {
 	if( !(a&1) )
@@ -1974,7 +1974,7 @@ static int OPLWrite(FM_OPL *OPL,int a,int v)
 	}
 	return OPL->status>>7;
 }
-
+#endif
 #endif
 
 static unsigned char OPLRead(FM_OPL *OPL,int a)

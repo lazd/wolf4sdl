@@ -87,7 +87,7 @@ static const char gheadname[] = "vgahead.";
 static const char gfilename[] = "vgagraph.";
 static const char gdictname[] = "vgadict.";
 static const char mheadname[] = "maphead.";
-static const char mfilename[] = "maptemp.";
+//static const char mfilename[] = "maptemp.";
 static const char aheadname[] = "audiohed.";
 static const char afilename[] = "audiot.";
 
@@ -189,7 +189,7 @@ boolean CA_LoadFile (const char *filename, memptr *ptr)
     if (handle == -1)
         return false;
 
-    size = lseek(handle, 0, SEEK_END);
+    size = (int32_t)lseek(handle, 0, SEEK_END);
     lseek(handle, 0, SEEK_SET);
     *ptr=malloc(size);
     CHECKMALLOCRESULT(*ptr);

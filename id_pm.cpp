@@ -44,7 +44,7 @@ void PM_Startup()
     if(pageDataSize > (size_t) -1)
         Quit("The page file \"%s\" is too large!", fname);
 
-    pageOffsets[ChunksInFile] = fileSize;
+    pageOffsets[ChunksInFile] = static_cast<uint32_t>(fileSize);
 
     uint32_t dataStart = pageOffsets[0];
     int i;
@@ -82,7 +82,7 @@ void PM_Startup()
     uint8_t *ptr = (uint8_t *) PMPageData;
     for(i = 0; i < ChunksInFile; i++)
     {
-        if(i >= PMSpriteStart && i < PMSoundStart || i == ChunksInFile - 1)
+        if((i >= PMSpriteStart && i < PMSoundStart) || i == ChunksInFile - 1)
         {
             size_t offs = ptr - (uint8_t *) PMPageData;
 
