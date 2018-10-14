@@ -3787,7 +3787,7 @@ ReadAnyControl (ControlInfo * ci)
     {
         int jx, jy, jb;
 
-        IN_GetJoyDelta (&jx, &jy);
+        IN_GetJoyDelta (&jx, &jy, SDL_CONTROLLER_AXIS_LEFTX, SDL_CONTROLLER_AXIS_LEFTY);
         if (jy < -SENSITIVE)
             ci->dir = dir_North;
         else if (jy > SENSITIVE)

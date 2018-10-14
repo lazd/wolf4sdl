@@ -166,32 +166,38 @@ void ControlMovement (objtype *ob)
     int32_t oldx,oldy;
     int     angle;
     int     angleunits;
+    float joyfactor = 1;
 
     thrustspeed = 0;
 
     oldx = player->x;
     oldy = player->y;
 
-    if(buttonstate[bt_strafeleft])
+    int joyx, joyy;
+    IN_GetJoyDelta (&joyx, &joyy, SDL_CONTROLLER_AXIS_LEFTX, SDL_CONTROLLER_AXIS_RIGHTY);
+
+    if(buttonstate[bt_strafeleft] || joyx < -JOYDEADZONE)
     {
+        float joyfactor = abs(joyx) / 127.0;
         angle = ob->angle + ANGLES/4;
         if(angle >= ANGLES)
             angle -= ANGLES;
         if(buttonstate[bt_run])
-            Thrust(angle, RUNMOVE * MOVESCALE * tics);
+            Thrust(angle, (int32_t) (joyfactor * RUNMOVE * MOVESCALE * tics));
         else
-            Thrust(angle, BASEMOVE * MOVESCALE * tics);
+            Thrust(angle, (int32_t) (joyfactor * BASEMOVE * MOVESCALE * tics));
     }
 
-    if(buttonstate[bt_straferight])
+    if(buttonstate[bt_straferight] || joyx > JOYDEADZONE)
     {
+        float joyfactor = abs(joyx) / 127.0;
         angle = ob->angle - ANGLES/4;
         if(angle < 0)
             angle += ANGLES;
         if(buttonstate[bt_run])
-            Thrust(angle, RUNMOVE * MOVESCALE * tics );
+            Thrust(angle, (int32_t) (joyfactor * RUNMOVE * MOVESCALE * tics));
         else
-            Thrust(angle, BASEMOVE * MOVESCALE * tics);
+            Thrust(angle, (int32_t) (joyfactor * BASEMOVE * MOVESCALE * tics));
     }
 
     //

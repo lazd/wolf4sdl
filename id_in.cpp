@@ -57,6 +57,7 @@ static KeyboardDef KbdDefs = {
 };
 
 static SDL_Joystick *Joystick;
+static SDL_GameController *GameController;
 int JoyNumButtons;
 static int JoyNumHats;
 
@@ -143,21 +144,22 @@ INL_GetMouseButtons(void)
 //		joystick (from +/-127)
 //
 ///////////////////////////////////////////////////////////////////////////
-void IN_GetJoyDelta(int *dx,int *dy)
+void IN_GetJoyDelta(int *dx,int *dy, SDL_GameControllerAxis xaxis, SDL_GameControllerAxis yaxis)
 {
-    if(!Joystick)
+    if(!GameController)
     {
         *dx = *dy = 0;
         return;
     }
 
     SDL_JoystickUpdate();
+    SDL_GameControllerUpdate();
 #ifdef _arch_dreamcast
     int x = 0;
     int y = 0;
 #else
-    int x = SDL_JoystickGetAxis(Joystick, 0) >> 8;
-    int y = SDL_JoystickGetAxis(Joystick, 1) >> 8;
+    int x = SDL_GameControllerGetAxis(GameController, xaxis) >> 8;
+    int y = SDL_GameControllerGetAxis(GameController, yaxis) >> 8;
 #endif
 
     if(param_joystickhat != -1)
@@ -179,6 +181,10 @@ void IN_GetJoyDelta(int *dx,int *dy)
         else if(y > 127) y = 127;
     }
 
+    // Apply expo
+    x = (int) (pow(x / 127.0, JOYEXPO) * (x > 0 ? 127 : -127));
+    y = (int) (pow(y / 127.0, JOYEXPO) * (y > 0 ? 127 : -127));
+
     *dx = x;
     *dy = y;
 }
@@ -199,8 +205,9 @@ void IN_GetJoyFineDelta(int *dx, int *dy)
     }
 
     SDL_JoystickUpdate();
-    int x = SDL_JoystickGetAxis(Joystick, 0);
-    int y = SDL_JoystickGetAxis(Joystick, 1);
+    SDL_GameControllerUpdate();
+    int x = SDL_GameControllerGetAxis(GameController, SDL_CONTROLLER_AXIS_LEFTX);
+    int y = SDL_GameControllerGetAxis(GameController, SDL_CONTROLLER_AXIS_LEFTY);
 
     if(x < -128) x = -128;
     else if(x > 127) x = 127;
@@ -222,19 +229,33 @@ void IN_GetJoyFineDelta(int *dx, int *dy)
 
 int IN_JoyButtons()
 {
-    if(!Joystick) return 0;
+    if(!GameController) return 0;
 
-    SDL_JoystickUpdate();
+    SDL_GameControllerUpdate();
 
+    // Read triggers in as buttons
+    int leftTrigger = (SDL_GameControllerGetAxis(GameController, SDL_CONTROLLER_AXIS_TRIGGERLEFT) >> 8) > JOYDEADZONE;
+    int rightTrigger = (SDL_GameControllerGetAxis(GameController, SDL_CONTROLLER_AXIS_TRIGGERRIGHT) >> 8) > JOYDEADZONE;
+
+    // Read in each button in the order we expect to define it
     int res = 0;
-    for(int i = 0; i < JoyNumButtons && i < 32; i++)
-        res |= SDL_JoystickGetButton(Joystick, i) << i;
+    res |= (SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_A) || rightTrigger) << 0;
+    res |= (SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_B) || leftTrigger) << 1;
+    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_X) << 2;
+    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_Y) << 3;
+    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_LEFTSHOULDER) << 4;
+    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) << 5;
+    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_LEFTSTICK) << 6;
+    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_RIGHTSTICK) << 7;
+    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_BACK) << 8;
+    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_START) << 9;
+    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_GUIDE) << 10;
     return res;
 }
 
 boolean IN_JoyPresent()
 {
-    return Joystick != NULL;
+    return GameController != NULL;
 }
 
 static void processEvent(SDL_Event *event)
@@ -397,6 +418,8 @@ IN_Startup(void)
     if(param_joystickindex >= 0 && param_joystickindex < SDL_NumJoysticks())
     {
         Joystick = SDL_JoystickOpen(param_joystickindex);
+        GameController = SDL_GameControllerOpen(param_joystickindex);
+
         if(Joystick)
         {
             JoyNumButtons = SDL_JoystickNumButtons(Joystick);
@@ -440,6 +463,9 @@ IN_Shutdown(void)
 
     if(Joystick)
         SDL_JoystickClose(Joystick);
+
+    if(GameController)
+        SDL_GameControllerClose(GameController);
 
 	IN_Started = false;
 }
@@ -512,6 +538,10 @@ IN_ReadControl(int player,ControlInfo *info)
 	info->button1 = (buttons & (1 << 1)) != 0;
 	info->button2 = (buttons & (1 << 2)) != 0;
 	info->button3 = (buttons & (1 << 3)) != 0;
+    // info->button0 = (buttons & (1 << 0)) != 0 || SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_A);
+    // info->button1 = (buttons & (1 << 1)) != 0 || SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_B);
+    // info->button2 = (buttons & (1 << 2)) != 0 || SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_X);
+    // info->button3 = (buttons & (1 << 3)) != 0 || SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_Y);
 	info->dir = DirTable[((my + 1) * 3) + (mx + 1)];
 }
 

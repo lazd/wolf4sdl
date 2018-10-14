@@ -1002,6 +1002,8 @@ void UpdateSoundLoc(void);
 #define RUNTURN                 70
 
 #define JOYSCALE                2
+#define JOYEXPO                 2
+#define JOYDEADZONE             12
 
 extern  byte            tilemap[MAPSIZE][MAPSIZE];      // wall values only
 extern  byte            spotvis[MAPSIZE][MAPSIZE];

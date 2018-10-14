@@ -59,8 +59,8 @@ int buttonjoy[32] = {
     bt_attack, bt_strafe, bt_use, bt_run, bt_esc, bt_prevweapon, bt_nobutton, bt_nextweapon,
     bt_pause, bt_strafeleft, bt_straferight, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton,
 #else
-    bt_attack, bt_strafe, bt_use, bt_run, bt_strafeleft, bt_straferight, bt_esc, bt_pause,
-    bt_prevweapon, bt_nextweapon, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton,
+    bt_attack, bt_use, bt_strafe, bt_run, bt_prevweapon, bt_nextweapon, bt_run, bt_run,
+    bt_pause, bt_esc, bt_esc, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton,
 #endif
     bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton,
     bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton
@@ -364,18 +364,28 @@ void PollJoystickMove (void)
 {
     int joyx, joyy;
 
-    IN_GetJoyDelta (&joyx, &joyy);
+    IN_GetJoyDelta (&joyx, &joyy, SDL_CONTROLLER_AXIS_RIGHTX, SDL_CONTROLLER_AXIS_LEFTY);
 
     int delta = buttonstate[bt_run] ? RUNMOVE * tics : BASEMOVE * tics;
 
-    if (joyx > 64 || buttonstate[bt_turnright])
-        controlx += delta;
-    else if (joyx < -64  || buttonstate[bt_turnleft])
-        controlx -= delta;
-    if (joyy > 64 || buttonstate[bt_movebackward])
-        controly += delta;
-    else if (joyy < -64 || buttonstate[bt_moveforward])
-        controly -= delta;
+    int newcontrolx = delta;
+    int newcontroly = delta;
+
+    if (joyx != 0) {
+        newcontrolx = (int) ((abs(joyx) / 127.0) * delta);
+    }
+    if (joyy != 0) {
+        newcontroly = (int) ((abs(joyy) / 127.0) * delta);
+    }
+
+    if (joyx > JOYDEADZONE || buttonstate[bt_turnright])
+        controlx += newcontrolx;
+    else if (joyx < -JOYDEADZONE || buttonstate[bt_turnleft])
+        controlx -= newcontrolx;
+    if (joyy > JOYDEADZONE || buttonstate[bt_movebackward])
+        controly += newcontroly;
+    else if (joyy < -JOYDEADZONE || buttonstate[bt_moveforward])
+        controly -= newcontroly;
 }
 
 /*
