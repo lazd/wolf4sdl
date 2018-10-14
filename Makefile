@@ -4,7 +4,8 @@ CONFIG ?= config.default
 
 BINARY    ?= wolf3d
 PREFIX    ?= /usr/local
-MANPREFIX ?= $(PREFIX)
+MANPREFIX ?= $(PREFIX)/share/man/
+MANPAGE   ?= man6/wolf4sdl.6
 
 INSTALL         ?= install
 INSTALL_PROGRAM ?= $(INSTALL) -m 555 -s
@@ -122,3 +123,4 @@ install: $(BINARY)
 	@echo '===> INSTALL'
 	$(Q)$(INSTALL) -d $(PREFIX)/bin
 	$(Q)$(INSTALL_PROGRAM) $(BINARY) $(PREFIX)/bin
+	$(Q)$(INSTALL_MAN) $(MANPAGE) $(MANPREFIX)/man6
