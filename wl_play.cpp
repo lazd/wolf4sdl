@@ -59,8 +59,8 @@ int buttonjoy[32] = {
     bt_attack, bt_strafe, bt_use, bt_run, bt_esc, bt_prevweapon, bt_nobutton, bt_nextweapon,
     bt_pause, bt_strafeleft, bt_straferight, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton,
 #else
-    bt_attack, bt_use, bt_strafe, bt_run, bt_prevweapon, bt_nextweapon, bt_run, bt_run,
-    bt_pause, bt_esc, bt_esc, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton,
+    bt_attack, bt_use, bt_strafe, bt_run, bt_prevweapon, bt_nextweapon, bt_use, bt_attack,
+    bt_run, bt_run, bt_pause, bt_esc, bt_esc, bt_nobutton, bt_nobutton, bt_nobutton,
 #endif
     bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton,
     bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton

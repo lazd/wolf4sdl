@@ -2205,7 +2205,7 @@ DrawCtlScreen (void)
 ////////////////////////////////////////////////////////////////////
 enum
 { FIRE, STRAFE, RUN, OPEN };
-char mbarray[4][3] = { "b0", "b1", "b2", "b3" };
+char mbarray[10][3] = { "A ", "B ", "X ", "Y ", "L1", "R1", "L2", "R2", "LS", "RS" };
 int8_t order[4] = { RUN, OPEN, FIRE, STRAFE };
 
 
@@ -2352,11 +2352,10 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
                 IN_ClearKeysDown ();
                 ci.button0 = ci.button1 = false;
             }
-
         //
         // CHANGE BUTTON VALUE?
         //
-        if (((type != KEYBOARDBTNS && type != KEYBOARDMOVE) && (ci.button0 | ci.button1 | ci.button2 | ci.button3)) ||
+        if (((type != KEYBOARDBTNS && type != KEYBOARDMOVE) && (ci.button0 || ci.button1 || ci.button2 || ci.button3 || ci.button4 || ci.button5 || ci.button6 || ci.button7 || ci.button8 || ci.button9)) ||
             ((type == KEYBOARDBTNS || type == KEYBOARDMOVE) && LastScan == sc_Enter))
         {
             lastFlashTime = GetTimeCount();
@@ -2435,10 +2434,24 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
                             result = 3;
                         else if (ci.button3)
                             result = 4;
+                        else if (ci.button4)
+                            result = 5;
+                        else if (ci.button5)
+                            result = 6;
+                        else if (ci.button6)
+                            result = 7;
+                        else if (ci.button7)
+                            result = 8;
+                        else if (ci.button8)
+                            result = 9;
+                        else if (ci.button9)
+                            result = 10;
 
                         if (result)
                         {
-                            for (int z = 0; z < 4; z++)
+                            /*
+                            // Allow the same action to be bound to multiple buttons
+                            for (int z = 0; z < 10; z++)
                             {
                                 if (order[which] == buttonjoy[z])
                                 {
@@ -2446,6 +2459,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
                                     break;
                                 }
                             }
+                            */
 
                             buttonjoy[result - 1] = order[which];
                             picked = 1;
@@ -2851,7 +2865,7 @@ DrawCustMouse (int hilight)
 void
 PrintCustJoy (int i)
 {
-    for (int j = 0; j < 4; j++)
+    for (int j = 0; j < 10; j++)
     {
         if (order[i] == buttonjoy[j])
         {
@@ -3718,8 +3732,8 @@ WaitKeyUp (void)
 {
     ControlInfo ci;
     while (ReadAnyControl (&ci), ci.button0 |
-           ci.button1 |
-           ci.button2 | ci.button3 | Keyboard[sc_Space] | Keyboard[sc_Enter] | Keyboard[sc_Escape])
+           ci.button1 | ci.button2 | ci.button3 | ci.button4 | ci.button5 | ci.button6 | ci.button7 | ci.button8 | ci.button9 |
+           Keyboard[sc_Space] | Keyboard[sc_Enter] | Keyboard[sc_Escape])
     {
         IN_WaitAndProcessEvents();
     }
@@ -3801,10 +3815,16 @@ ReadAnyControl (ControlInfo * ci)
         jb = IN_JoyButtons ();
         if (jb)
         {
-            ci->button0 = jb & 1;
-            ci->button1 = jb & 2;
-            ci->button2 = jb & 4;
-            ci->button3 = jb & 8;
+            ci->button0 = (jb & (1 << 0)) > 0;
+            ci->button1 = (jb & (1 << 1)) > 0;
+            ci->button2 = (jb & (1 << 2)) > 0;
+            ci->button3 = (jb & (1 << 3)) > 0;
+            ci->button4 = (jb & (1 << 4)) > 0;
+            ci->button5 = (jb & (1 << 5)) > 0;
+            ci->button6 = (jb & (1 << 6)) > 0;
+            ci->button7 = (jb & (1 << 7)) > 0;
+            ci->button8 = (jb & (1 << 8)) > 0;
+            ci->button9 = (jb & (1 << 9)) > 0;
         }
     }
 }

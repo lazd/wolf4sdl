@@ -233,23 +233,22 @@ int IN_JoyButtons()
 
     SDL_GameControllerUpdate();
 
-    // Read triggers in as buttons
-    int leftTrigger = (SDL_GameControllerGetAxis(GameController, SDL_CONTROLLER_AXIS_TRIGGERLEFT) >> 8) > JOYDEADZONE;
-    int rightTrigger = (SDL_GameControllerGetAxis(GameController, SDL_CONTROLLER_AXIS_TRIGGERRIGHT) >> 8) > JOYDEADZONE;
-
     // Read in each button in the order we expect to define it
     int res = 0;
-    res |= (SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_A) || rightTrigger) << 0;
-    res |= (SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_B) || leftTrigger) << 1;
+    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_A) << 0;
+    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_B) << 1;
     res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_X) << 2;
     res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_Y) << 3;
     res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_LEFTSHOULDER) << 4;
     res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) << 5;
-    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_LEFTSTICK) << 6;
-    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_RIGHTSTICK) << 7;
-    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_BACK) << 8;
-    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_START) << 9;
-    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_GUIDE) << 10;
+    // Read triggers in as buttons
+    res |= ((SDL_GameControllerGetAxis(GameController, SDL_CONTROLLER_AXIS_TRIGGERLEFT) >> 8) > JOYDEADZONE) << 6;
+    res |= ((SDL_GameControllerGetAxis(GameController, SDL_CONTROLLER_AXIS_TRIGGERRIGHT) >> 8) > JOYDEADZONE) << 7;
+    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_LEFTSTICK) << 8;
+    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_RIGHTSTICK) << 9;
+    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_BACK) << 10;
+    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_START) << 11;
+    res |= SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_GUIDE) << 12;
     return res;
 }
 
@@ -537,11 +536,13 @@ IN_ReadControl(int player,ControlInfo *info)
 	info->button0 = (buttons & (1 << 0)) != 0;
 	info->button1 = (buttons & (1 << 1)) != 0;
 	info->button2 = (buttons & (1 << 2)) != 0;
-	info->button3 = (buttons & (1 << 3)) != 0;
-    // info->button0 = (buttons & (1 << 0)) != 0 || SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_A);
-    // info->button1 = (buttons & (1 << 1)) != 0 || SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_B);
-    // info->button2 = (buttons & (1 << 2)) != 0 || SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_X);
-    // info->button3 = (buttons & (1 << 3)) != 0 || SDL_GameControllerGetButton(GameController, SDL_CONTROLLER_BUTTON_Y);
+    info->button3 = (buttons & (1 << 3)) != 0;
+    info->button4 = (buttons & (1 << 4)) != 0;
+    info->button5 = (buttons & (1 << 5)) != 0;
+    info->button6 = (buttons & (1 << 6)) != 0;
+    info->button7 = (buttons & (1 << 7)) != 0;
+    info->button8 = (buttons & (1 << 8)) != 0;
+	info->button9 = (buttons & (1 << 9)) != 0;
 	info->dir = DirTable[((my + 1) * 3) + (mx + 1)];
 }
 
