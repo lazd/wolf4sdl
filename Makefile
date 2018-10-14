@@ -12,7 +12,7 @@ INSTALL_MAN     ?= $(INSTALL) -m 444
 INSTALL_DATA    ?= $(INSTALL) -m 444
 
 
-SDL_CONFIG  ?= sdl-config
+SDL_CONFIG  ?= sdl2-config
 CFLAGS_SDL  ?= $(shell $(SDL_CONFIG) --cflags)
 LDFLAGS_SDL ?= $(shell $(SDL_CONFIG) --libs)
 
@@ -40,7 +40,7 @@ CCFLAGS += -Wsequence-point
 CXXFLAGS += $(CFLAGS)
 
 LDFLAGS += $(LDFLAGS_SDL)
-LDFLAGS += -lSDL_mixer
+LDFLAGS += -lSDL2_mixer
 ifneq (,$(findstring MINGW,$(shell uname -s)))
 LDFLAGS += -static-libgcc
 endif
