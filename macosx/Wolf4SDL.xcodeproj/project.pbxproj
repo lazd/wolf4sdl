@@ -432,7 +432,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					../build/dep/lib,
+					/usr/local/lib/,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.chrisballinger.wolf4sdl;
 				PRODUCT_NAME = Wolf4SDL;
@@ -453,7 +453,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					../build/dep/lib,
+					/usr/local/lib/,
 				);
 				OTHER_CFLAGS = "-fast";
 				OTHER_CPLUSPLUSFLAGS = "-fast";
@@ -494,9 +494,10 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					../build/dep/include,
+					/usr/local/include/,
 				);
-				LIBRARY_SEARCH_PATHS = ../build/dep/lib;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib/;
+				"LIBRARY_SEARCH_PATHS[arch=*]" = /usr/local/include/;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
@@ -537,9 +538,9 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					../build/dep/include,
+					/usr/local/include/,
 				);
-				LIBRARY_SEARCH_PATHS = ../build/dep/lib;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib/;
 				"LIBRARY_SEARCH_PATHS[arch=*]" = /usr/local/include/;
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
