@@ -214,6 +214,11 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 
+#Project specific files
+*.o
+*.d
+*.wl6
+wolf3d
 build
 Wolf4SDL.xccheckout
 macosx/Wolf4SDL.xcodeproj/project.xcworkspace/xcuserdata
