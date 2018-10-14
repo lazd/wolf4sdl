@@ -21,7 +21,7 @@
 #elif !defined(_WIN32)
 #	include <stdint.h>
 #endif
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 //typedef uintptr_t	Bitu;
 //typedef intptr_t	Bits;

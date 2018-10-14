@@ -5,8 +5,8 @@
     Feel free to customize this file to suit your needs
 */
 
-#include "SDL.h"
-#include "SDLMain.h"
+#include "SDL2/SDL.h"
+#include "SDL2/SDLMain.h"
 #include <sys/param.h> /* for MAXPATHLEN */
 #include <unistd.h>
 
