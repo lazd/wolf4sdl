@@ -166,7 +166,6 @@ void ControlMovement (objtype *ob)
     int32_t oldx,oldy;
     int     angle;
     int     angleunits;
-    float joyfactor = 1;
 
     thrustspeed = 0;
 
@@ -176,9 +175,9 @@ void ControlMovement (objtype *ob)
     int joyx, joyy;
     IN_GetJoyDelta (&joyx, &joyy, SDL_CONTROLLER_AXIS_LEFTX, SDL_CONTROLLER_AXIS_RIGHTY);
 
+    float joyfactor = abs(joyx) / 127.0;
     if(buttonstate[bt_strafeleft] || joyx < -JOYDEADZONE)
     {
-        float joyfactor = abs(joyx) / 127.0;
         angle = ob->angle + ANGLES/4;
         if(angle >= ANGLES)
             angle -= ANGLES;
@@ -190,7 +189,6 @@ void ControlMovement (objtype *ob)
 
     if(buttonstate[bt_straferight] || joyx > JOYDEADZONE)
     {
-        float joyfactor = abs(joyx) / 127.0;
         angle = ob->angle - ANGLES/4;
         if(angle < 0)
             angle += ANGLES;
