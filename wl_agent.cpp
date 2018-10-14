@@ -605,8 +605,164 @@ void GivePoints (int32_t points)
 
 void DrawWeapon (void)
 {
-    if(viewsize == 21 && ingame) return;
-    StatusDrawPic (32,8,KNIFEPIC+gamestate.weapon);
+//   StatusDrawPic (32,8,KNIFEPIC+gamestate.weapon);
+}
+
+void DrawMap (int z, int lenx, int leny, int offx, int offy, int midx, int midy)
+{
+    int x=player->tilex,y=player->tiley;
+
+    for (x=0;x<lenx;x++)
+    {
+        for (y=0;y<leny;y++)
+        {
+            // The coordinates in mapspace
+            int mapx = offx+x;
+            int mapy = offy+y;
+
+            // The coordinates within our plotted minimap
+            int plotx = midx+x*z;
+            int ploty = midy+y*z;
+
+            // Get the actor tile
+            uintptr_t tile = (uintptr_t)actorat[mapx][mapy];
+
+            // Blank space
+            int color = 0x00;
+
+            int doornum = tilemap[mapx][mapy];
+            if (MAPSPOT(mapx,mapy,1) == SPAWNPOINTTILE) {
+                // spawn point
+                color = 0xB9;
+            }
+            else if (tile == ELEVATORTILE) {
+                // end of level
+                color = 0x0D;
+            }
+            else if (ISPOINTER(tile))
+            {
+                if (((objtype *)tile)->flags&FL_SHOOTABLE)
+                {
+                    // enemy
+                    color = 0x23;
+                }
+                else
+                {
+                    // dead enemy
+                    color = 0x2A;
+                }
+            }
+            else if (!tile)
+            {
+                if (spotvis[mapx][mapy]) color = 0x6F;  // visible area
+            }
+            else if (MAPSPOT(mapx,mapy,1) == PUSHABLETILE)
+            {
+                // secret doors
+                color = 0xA7;
+            }
+            else if (tile == 64) color = 0xD8;  // solid object
+            else if (tile < 128) color = 0x19;  // walls
+            else if (tile < 256) color = 0x83;  // doors
+
+            VWB_Bar(plotx,ploty,z,z,color);
+        }
+    }
+
+    statobj_t *statptr;
+    for (statptr = &statobjlist[0] ; statptr !=laststatobj ; statptr++)
+    {
+        if (statptr->shapenum != -1 && statptr->flags & FL_BONUS)
+        {
+            // bonuses
+            int drawx = statptr->tilex*z+midx-offx;
+            int drawy = statptr->tiley*z+midy-offy;
+            if (
+                (drawx > midx && drawx < midx + lenx*z) &&
+                (drawy > midy && drawy < midy + leny*z)
+            )
+            {
+                // pink for unknown bonuses
+                int color = 0x0D;
+
+                switch (statptr->itemnumber)
+                {
+                    case    bo_fullheal:
+                        // extra life
+                        color = 0x93;
+                        break;
+                    case    bo_gibs:
+                        // giblets
+                        color = 0x6D;
+                        break;
+                    case    bo_alpo:
+                    case    bo_food:
+                    case    bo_firstaid:
+                        // health
+                        color = 0x66;
+                        break;
+                    case    bo_key1:
+                    case    bo_key2:
+                    case    bo_key3:
+                    case    bo_key4:
+#ifdef SPEAR
+                    case    bo_spear:
+#endif
+                        // key
+                        color = 0x10;
+                        break;
+
+                    case    bo_cross:
+                    case    bo_chalice:
+                    case    bo_bible:
+                    case    bo_crown:
+                        // treasure
+                        color = 0x4A;
+                        break;
+
+                    case    bo_clip:
+                    case    bo_clip2:
+#ifdef SPEAR
+                    case    bo_25clip:
+#endif
+                        // ammo
+                        color = 0x7B;
+                        break;
+
+                    case    bo_machinegun:
+                    case    bo_chaingun:
+                        // gun
+                        color = 0x77;
+                        break;
+                }
+
+                VWB_Bar(drawx,drawy,z,z,color);
+            }
+        }
+    }
+
+    // BJ
+    VWB_Bar(player->tilex*z+midx-offx,player->tiley*z+midy-offy,z,z,0x60);
+
+    VW_UpdateScreen ();
+}
+
+void DrawOverheadMap (void)
+{
+    int mapzoom = 128/MAPSIZE;
+    int mapx = (320-MAPSIZE*mapzoom)/2;
+    int mapy = (160-MAPSIZE*mapzoom)/2;
+
+    int borderthickness = 4;
+    int drawsize = MAPSIZE*mapzoom;
+    VWB_Bar(mapx-borderthickness,mapy-borderthickness,drawsize+borderthickness*2,drawsize+borderthickness*2,VIEWCOLOR);
+
+    DrawMap(mapzoom, MAPSIZE, MAPSIZE, 0, 0, mapx, mapy);
+}
+
+void DrawMiniMap (void)
+{
+    DrawMap(1, 61, 31, player->tilex*4/64, player->tiley*34/64, 249, 165);
 }
 
 
@@ -1507,6 +1663,7 @@ void    T_Player (objtype *ob)
         return;
     }
 
+    DrawMiniMap ();
     UpdateFace ();
     CheckWeaponChange ();
 

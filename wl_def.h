@@ -123,6 +123,7 @@ void Quit(const char *errorStr, ...);
 #define AREATILE        107         // first of NUMAREAS floor tiles
 #define NUMAREAS        37
 #define ELEVATORTILE    21
+#define SPAWNPOINTTILE  20
 #define AMBUSHTILE      106
 #define ALTELEVATORTILE 107
 
@@ -1197,6 +1198,7 @@ void    GiveKey (int key);
 void    StatusDrawFace(unsigned picnum);
 void    DrawFace (void);
 void    DrawHealth (void);
+void    DrawOverheadMap (void);
 void    HealSelf (int points);
 void    DrawLevel (void);
 void    DrawLives (void);

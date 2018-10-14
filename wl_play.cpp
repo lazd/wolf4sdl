@@ -685,8 +685,9 @@ void CheckKeys (void)
     if(Paused)
     {
         int lastoffs = StopMusic();
-        LatchDrawPic (20 - 4, 80 - 2 * 8, PAUSEDPIC);
+        // LatchDrawPic (20 - 4, 80 - 2 * 8, PAUSEDPIC);
         VH_UpdateScreen();
+        DrawOverheadMap();
         IN_Ack ();
         Paused = false;
         ContinueMusic(lastoffs);
