@@ -4,6 +4,7 @@ CONFIG ?= config.default
 
 BINARY    ?= wolf3d
 PREFIX    ?= /usr/local
+DATADIR   ?= $(PREFIX)/share/games/wolf3d/
 MANPREFIX ?= $(PREFIX)/share/man/
 MANPAGE   ?= man6/wolf4sdl.6
 
@@ -31,6 +32,9 @@ ifdef GPL
     CFLAGS += -DUSE_GPL
 endif
 
+ifdef DATADIR
+    CFLAGS += -DDATADIR=\"$(DATADIR)\"
+endif
 
 CCFLAGS += $(CFLAGS)
 CCFLAGS += -std=gnu99
