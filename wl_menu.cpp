@@ -2328,11 +2328,25 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
         if (redraw)
         {
             x = CST_START + CST_SPC * which;
+
+            // Clear existing text
             DrawWindow (5, PrintY - 1, 310, 13, BKGDCOLOR);
 
+            // Redraw the other joystick options that could have been overwritten
+            if (type == JOYSTICK)
+            {
+                DrawCustJoy2(0);
+            }
+            else if (type == JOYSTICK2) {
+                DrawCustJoy(0);
+            }
+
             DrawRtn (1);
+
+            // Draw the grey box on the highlighted item
             DrawWindow (x - 2, PrintY, CST_SPC, 11, TEXTCOLOR);
             DrawOutline (x - 2, PrintY, CST_SPC, 11, 0, HIGHLIGHT);
+
             SETFONTCOLOR (0, TEXTCOLOR);
             PrintRtn (which);
             PrintX = x;
@@ -2868,7 +2882,6 @@ DrawCustJoy2 (int hilight)
 {
     int i, color;
 
-
     color = TEXTCOLOR;
     if (hilight)
         color = HIGHLIGHT;
@@ -2881,6 +2894,9 @@ DrawCustJoy2 (int hilight)
     }
     else
         CusMenu[0].active = 1;
+
+    // Clear text
+    VWB_Bar (60, CST_Y + 13 * 2, 250, 12, BKGDCOLOR);
 
     PrintY = CST_Y + 13 * 2;
     for (i = 0; i < 4; i++)
@@ -2918,6 +2934,9 @@ DrawCustJoy (int hilight)
     }
     else
         CusMenu[3].active = 1;
+
+    // Clear text
+    VWB_Bar (60, CST_Y + 13 * 5, 250, 12, BKGDCOLOR);
 
     PrintY = CST_Y + 13 * 5;
     for (i = 0; i < 4; i++)
