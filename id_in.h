@@ -115,7 +115,7 @@ typedef	enum		{
 						dir_None
 					} Direction;
 typedef	struct		{
-						boolean		button0,button1,button2,button3,button4,button5,button6,button7,button8,button9;
+						boolean		button0,button1,button2,button3,button4,button5,button6,button7,button8,button9,button10,button11,button12;
 						short		x,y;
 						Motion		xaxis,yaxis;
 						Direction	dir;

@@ -542,7 +542,10 @@ IN_ReadControl(int player,ControlInfo *info)
     info->button6 = (buttons & (1 << 6)) != 0;
     info->button7 = (buttons & (1 << 7)) != 0;
     info->button8 = (buttons & (1 << 8)) != 0;
-	info->button9 = (buttons & (1 << 9)) != 0;
+    info->button9 = (buttons & (1 << 9)) != 0;
+    info->button10 = (buttons & (1 << 10)) != 0;
+    info->button11 = (buttons & (1 << 11)) != 0;
+	info->button12 = (buttons & (1 << 12)) != 0;
 	info->dir = DirTable[((my + 1) * 3) + (mx + 1)];
 }
 

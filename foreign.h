@@ -63,6 +63,10 @@
 #define STR_COPEN	"Open"
 #define STR_CFIRE	"Fire"
 #define STR_CSTRAFE	"Strafe"
+#define STR_CPREVWEP "Wep-"
+#define STR_CNEXTWEP "Wep+"
+#define STR_CPAUSE "Pause"
+#define STR_CESCAPE "Esc"
 
 #define	STR_LEFT	"Left"
 #define	STR_RIGHT	"Right"

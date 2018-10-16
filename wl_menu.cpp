@@ -2203,10 +2203,9 @@ DrawCtlScreen (void)
 // CUSTOMIZE CONTROLS
 //
 ////////////////////////////////////////////////////////////////////
-enum
-{ FIRE, STRAFE, RUN, OPEN };
-char mbarray[10][3] = { "A ", "B ", "X ", "Y ", "L1", "R1", "L2", "R2", "LS", "RS" };
-int8_t order[4] = { RUN, OPEN, FIRE, STRAFE };
+char mbarray[13][3] = { "A ", "B ", "X ", "Y ", "L1", "R1", "L2", "R2", "LS", "RS", "BK", "GD", "XB" };
+int8_t order[4] = { bt_run, bt_use, bt_attack, bt_strafe };
+int8_t order2[4] = { bt_pause, bt_esc, bt_prevweapon, bt_nextweapon };
 
 
 int
@@ -2221,8 +2220,8 @@ CustomControls (int)
         switch (which)
         {
             case 0:
-                DefineMouseBtns ();
-                DrawCustMouse (1);
+                DefineJoy2Btns ();
+                DrawCustJoy2 (1);
                 break;
             case 3:
                 DefineJoyBtns ();
@@ -2250,10 +2249,10 @@ CustomControls (int)
 // DEFINE THE MOUSE BUTTONS
 //
 void
-DefineMouseBtns (void)
+DefineJoy2Btns (void)
 {
-    CustomCtrls mouseallowed = { 0, 1, 1, 1 };
-    EnterCtrlData (2, &mouseallowed, DrawCustMouse, PrintCustMouse, MOUSE);
+    CustomCtrls joyallowed = { 1, 1, 1, 1 };
+    EnterCtrlData (2, &joyallowed, DrawCustJoy2, PrintCustJoy2, JOYSTICK2);
 }
 
 
@@ -2346,7 +2345,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
         SDL_Delay(5);
         ReadAnyControl (&ci);
 
-        if (type == MOUSE || type == JOYSTICK)
+        if (type == MOUSE || type == JOYSTICK || type == JOYSTICK2)
             if (IN_KeyDown (sc_Enter) || IN_KeyDown (sc_Control) || IN_KeyDown (sc_Alt))
             {
                 IN_ClearKeysDown ();
@@ -2355,7 +2354,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
         //
         // CHANGE BUTTON VALUE?
         //
-        if (((type != KEYBOARDBTNS && type != KEYBOARDMOVE) && (ci.button0 || ci.button1 || ci.button2 || ci.button3 || ci.button4 || ci.button5 || ci.button6 || ci.button7 || ci.button8 || ci.button9)) ||
+        if (((type != KEYBOARDBTNS && type != KEYBOARDMOVE) && (ci.button0 || ci.button1 || ci.button2 || ci.button3 || ci.button4 || ci.button5 || ci.button6 || ci.button7 || ci.button8 || ci.button9 || ci.button10 || ci.button11 || ci.button12)) ||
             ((type == KEYBOARDBTNS || type == KEYBOARDMOVE) && LastScan == sc_Enter))
         {
             lastFlashTime = GetTimeCount();
@@ -2395,31 +2394,49 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
                 //
                 switch (type)
                 {
-                    case MOUSE:
-                        button = IN_MouseButtons();
-                        switch (button)
-                        {
-                            case 1:
-                                result = 1;
-                                break;
-                            case 2:
-                                result = 2;
-                                break;
-                            case 4:
-                                result = 3;
-                                break;
-                        }
+                    case JOYSTICK2:
+                        if (ci.button0)
+                            result = 1;
+                        else if (ci.button1)
+                            result = 2;
+                        else if (ci.button2)
+                            result = 3;
+                        else if (ci.button3)
+                            result = 4;
+                        else if (ci.button4)
+                            result = 5;
+                        else if (ci.button5)
+                            result = 6;
+                        else if (ci.button6)
+                            result = 7;
+                        else if (ci.button7)
+                            result = 8;
+                        else if (ci.button8)
+                            result = 9;
+                        else if (ci.button9)
+                            result = 10;
+                        else if (ci.button10)
+                            result = 11;
+                        else if (ci.button11)
+                            result = 12;
+                        else if (ci.button12)
+                            result = 13;
 
                         if (result)
                         {
-                            for (int z = 0; z < 4; z++)
-                                if (order[which] == buttonmouse[z])
+                            /*
+                            // Allow the same action to be bound to multiple buttons
+                            for (int z = 0; z < 10; z++)
+                            {
+                                if (order[which] == buttonjoy[z])
                                 {
-                                    buttonmouse[z] = bt_nobutton;
+                                    buttonjoy[z] = bt_nobutton;
                                     break;
                                 }
+                            }
+                            */
 
-                            buttonmouse[result - 1] = order[which];
+                            buttonjoy[result - 1] = order2[which];
                             picked = 1;
                             SD_PlaySound (SHOOTDOORSND);
                         }
@@ -2446,6 +2463,12 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
                             result = 9;
                         else if (ci.button9)
                             result = 10;
+                        else if (ci.button10)
+                            result = 11;
+                        else if (ci.button11)
+                            result = 12;
+                        else if (ci.button12)
+                            result = 13;
 
                         if (result)
                         {
@@ -2582,7 +2605,7 @@ FixupCustom (int w)
     switch (w)
     {
         case 0:
-            DrawCustMouse (1);
+            DrawCustJoy2 (1);
             break;
         case 3:
             DrawCustJoy (1);
@@ -2612,7 +2635,7 @@ FixupCustom (int w)
             switch (lastwhich)
             {
                 case 0:
-                    DrawCustMouse (0);
+                    DrawCustJoy2 (0);
                     break;
                 case 3:
                     DrawCustJoy (0);
@@ -2645,7 +2668,7 @@ DrawCustomScreen (void)
 
     PrintX = CST_START;
     PrintY = CST_Y + 26;
-    DrawCustMouse (0);
+    DrawCustJoy2 (0);
 
     PrintX = CST_START;
     US_Print ("\n\n\n");
@@ -2675,7 +2698,7 @@ DrawCustomScreen (void)
 
 #ifndef SPEAR
     PrintY = CST_Y;
-    US_CPrint ("Mouse\n");
+    US_CPrint ("Game Controller\n");
 #else
     PrintY = CST_Y + 13;
     VWB_DrawPic (128, 48, C_MOUSEPIC);
@@ -2684,26 +2707,26 @@ DrawCustomScreen (void)
     SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
 #ifdef SPANISH
     PrintX = CST_START - 16;
-    US_Print (STR_CRUN);
+    US_Print (STR_CPAUSE);
     PrintX = CST_START - 16 + CST_SPC * 1;
-    US_Print (STR_COPEN);
+    US_Print (STR_CESCAPE);
     PrintX = CST_START - 16 + CST_SPC * 2;
-    US_Print (STR_CFIRE);
+    US_Print (STR_CPREVWEP);
     PrintX = CST_START - 16 + CST_SPC * 3;
-    US_Print (STR_CSTRAFE "\n");
+    US_Print (STR_CNEXTWEP "\n");
 #else
     PrintX = CST_START;
-    US_Print (STR_CRUN);
+    US_Print (STR_CPAUSE);
     PrintX = CST_START + CST_SPC * 1;
-    US_Print (STR_COPEN);
+    US_Print (STR_CESCAPE);
     PrintX = CST_START + CST_SPC * 2;
-    US_Print (STR_CFIRE);
+    US_Print (STR_CPREVWEP);
     PrintX = CST_START + CST_SPC * 3;
-    US_Print (STR_CSTRAFE "\n");
+    US_Print (STR_CNEXTWEP "\n");
 #endif
 
     DrawWindow (5, PrintY - 1, 310, 13, BKGDCOLOR);
-    DrawCustMouse (0);
+    DrawCustJoy2 (0);
     US_Print ("\n");
 
 
@@ -2712,7 +2735,7 @@ DrawCustomScreen (void)
     //
 #ifndef SPEAR
     SETFONTCOLOR (READCOLOR, BKGDCOLOR);
-    US_CPrint ("Joystick/Gravis GamePad\n");
+    US_CPrint ("\n");
 #else
     PrintY += 13;
     VWB_DrawPic (40, 88, C_JOYSTICKPIC);
@@ -2825,21 +2848,23 @@ DrawCustomScreen (void)
 
 
 void
-PrintCustMouse (int i)
+PrintCustJoy2 (int i)
 {
     int j;
 
-    for (j = 0; j < 4; j++)
-        if (order[i] == buttonmouse[j])
+    for (int j = 0; j < 13; j++)
+    {
+        if (order2[i] == buttonjoy[j])
         {
             PrintX = CST_START + CST_SPC * i;
             US_Print (mbarray[j]);
             break;
         }
+    }
 }
 
 void
-DrawCustMouse (int hilight)
+DrawCustJoy2 (int hilight)
 {
     int i, color;
 
@@ -2849,7 +2874,7 @@ DrawCustMouse (int hilight)
         color = HIGHLIGHT;
     SETFONTCOLOR (color, BKGDCOLOR);
 
-    if (!mouseenabled)
+    if (!joystickenabled)
     {
         SETFONTCOLOR (DEACTIVE, BKGDCOLOR);
         CusMenu[0].active = 0;
@@ -2859,7 +2884,7 @@ DrawCustMouse (int hilight)
 
     PrintY = CST_Y + 13 * 2;
     for (i = 0; i < 4; i++)
-        PrintCustMouse (i);
+        PrintCustJoy2 (i);
 }
 
 void
@@ -3732,7 +3757,7 @@ WaitKeyUp (void)
 {
     ControlInfo ci;
     while (ReadAnyControl (&ci), ci.button0 |
-           ci.button1 | ci.button2 | ci.button3 | ci.button4 | ci.button5 | ci.button6 | ci.button7 | ci.button8 | ci.button9 |
+           ci.button1 | ci.button2 | ci.button3 | ci.button4 | ci.button5 | ci.button6 | ci.button7 | ci.button8 | ci.button9 | ci.button10 | ci.button11 | ci.button12 |
            Keyboard[sc_Space] | Keyboard[sc_Enter] | Keyboard[sc_Escape])
     {
         IN_WaitAndProcessEvents();
@@ -3825,6 +3850,9 @@ ReadAnyControl (ControlInfo * ci)
             ci->button7 = (jb & (1 << 7)) > 0;
             ci->button8 = (jb & (1 << 8)) > 0;
             ci->button9 = (jb & (1 << 9)) > 0;
+            ci->button10 = (jb & (1 << 10)) > 0;
+            ci->button11 = (jb & (1 << 11)) > 0;
+            ci->button12 = (jb & (1 << 12)) > 0;
         }
     }
 }

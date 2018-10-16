@@ -155,7 +155,7 @@ void SetTextColor(CP_itemtype *items,int hlight);
 void DrawMenuGun(CP_iteminfo *iteminfo);
 void DrawStripes(int y);
 
-void DefineMouseBtns(void);
+void DefineJoy2Btns(void);
 void DefineJoyBtns(void);
 void DefineKeyBtns(void);
 void DefineKeyMove(void);
@@ -171,11 +171,11 @@ void DrawMouseSens(void);
 void DrawCtlScreen(void);
 void DrawCustomScreen(void);
 void DrawLSAction(int which);
-void DrawCustMouse(int hilight);
+void DrawCustJoy2(int hilight);
 void DrawCustJoy(int hilight);
 void DrawCustKeybd(int hilight);
 void DrawCustKeys(int hilight);
-void PrintCustMouse(int i);
+void PrintCustJoy2(int i);
 void PrintCustJoy(int i);
 void PrintCustKeybd(int i);
 void PrintCustKeys(int i);
@@ -204,7 +204,7 @@ void CheckForEpisodes(void);
 void FreeMusic(void);
 
 
-enum {MOUSE,JOYSTICK,KEYBOARDBTNS,KEYBOARDMOVE};        // FOR INPUT TYPES
+enum {MOUSE,JOYSTICK,JOYSTICK2,KEYBOARDBTNS,KEYBOARDMOVE};        // FOR INPUT TYPES
 
 enum menuitems
 {
