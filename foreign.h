@@ -49,7 +49,8 @@
 #define	STR_GAMEPAD	"Gamepad Enabled"
 #define STR_SENS  "Mouse Sensitivity"
 #define	STR_JOYSENS	"Gamepad Sensitivity"
-#define	STR_CUSTOM	"Customize controls"
+#define STR_CUSTOM  "Customize controls"
+#define	STR_CUSTOMJOY	"Customize gamepad"
 
 #define	STR_DADDY	"Can I play, Daddy?"
 #define	STR_HURTME	"Don't hurt me."

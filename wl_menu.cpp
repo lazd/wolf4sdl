@@ -120,9 +120,9 @@ CP_itemtype SndMenu[] = {
 };
 
 #ifdef JAPAN
-enum { CTL_MOUSEENABLE, CTL_JOYENABLE, CTL_JOY2BUTTONUNKNOWN, CTL_GAMEPADUNKONWN, CTL_MOUSESENS, CTL_JOYSENS, CTL_CUSTOMIZE };
+enum { CTL_MOUSEENABLE, CTL_JOYENABLE, CTL_JOY2BUTTONUNKNOWN, CTL_GAMEPADUNKONWN, CTL_MOUSESENS, CTL_JOYSENS, CTL_CUSTOMIZEKB, CTL_CUSTOMIZEJOY };
 #else
-enum { CTL_MOUSEENABLE, CTL_MOUSESENS, CTL_JOYENABLE, CTL_JOYSENS, CTL_CUSTOMIZE };
+enum { CTL_MOUSEENABLE, CTL_MOUSESENS, CTL_JOYENABLE, CTL_JOYSENS, CTL_CUSTOMIZEKB, CTL_CUSTOMIZEJOY };
 #endif
 
 CP_itemtype CtlMenu[] = {
@@ -133,13 +133,15 @@ CP_itemtype CtlMenu[] = {
     {0, "", 0},
     {0, "", MouseSensitivity},
     {0, "", JoySensitivity},
-    {1, "", CustomControls}
+    {1, "", CustomControls},
+    {0, "", CustomGamepadControls}
 #else
     {0, STR_MOUSEEN, 0},
     {0, STR_SENS, MouseSensitivity},
     {0, STR_JOYEN, 0},
     {0, STR_JOYSENS, JoySensitivity},
-    {1, STR_CUSTOM, CustomControls}
+    {1, STR_CUSTOM, CustomControls},
+    {0, STR_CUSTOMJOY, CustomGamepadControls}
 #endif
 };
 
@@ -235,12 +237,24 @@ CP_itemtype CusMenu[] = {
     {1, "", 0},
     {0, "", 0},
     {0, "", 0},
-    {1, "", 0},
+    {0, "", 0},
     {0, "", 0},
     {0, "", 0},
     {1, "", 0},
     {0, "", 0},
     {1, "", 0}
+};
+
+CP_itemtype CusJoyMenu[] = {
+    {1, "", 0},
+    {0, "", 0},
+    {0, "", 0},
+    {1, "", 0},
+    {0, "", 0},
+    {0, "", 0},
+    {0, "", 0},
+    {0, "", 0},
+    {0, "", 0}
 };
 
 // CP_iteminfo struct format: short x, y, amount, curpos, indent;
@@ -249,6 +263,7 @@ CP_iteminfo MainItems = { MENU_X, MENU_Y, lengthof(MainMenu), STARTITEM, 24 },
             LSItems   = { LSM_X, LSM_Y, lengthof(LSMenu), 0, 24 },
             CtlItems  = { CTL_X, CTL_Y, lengthof(CtlMenu), -1, 56 },
             CusItems  = { 8, CST_Y + 13 * 2, lengthof(CusMenu), -1, 0},
+            CusJoyItems  = { 8, CST_Y + 13 * 2, lengthof(CusJoyMenu), -1, 0},
 #ifndef SPEAR
             NewEitems = { NE_X, NE_Y, lengthof(NewEmenu), 0, 88 },
 #endif
@@ -1988,7 +2003,8 @@ CP_Control (int)
 
             case CTL_MOUSESENS:
             case CTL_JOYSENS:
-            case CTL_CUSTOMIZE:
+            case CTL_CUSTOMIZEJOY:
+            case CTL_CUSTOMIZEKB:
                 DrawCtlScreen ();
                 MenuFadeIn ();
                 WaitKeyUp ();
@@ -2229,6 +2245,7 @@ DrawCtlScreen (void)
 
     if (IN_JoyPresent())
     {
+        CtlMenu[CTL_CUSTOMIZEJOY].active = 1;
         CtlMenu[CTL_JOYENABLE].active = 1;
         CtlMenu[CTL_JOYSENS].active = 1;
     }
@@ -2288,6 +2305,35 @@ int8_t order2[4] = { bt_pause, bt_esc, bt_prevweapon, bt_nextweapon };
 
 
 int
+CustomGamepadControls (int)
+{
+    int which;
+
+    DrawCustomJoyScreen ();
+    do
+    {
+        which = HandleMenu (&CusJoyItems, &CusJoyMenu[0], FixupCustom);
+        switch (which)
+        {
+            case 0:
+                DefineJoy2Btns ();
+                DrawCustJoy2 (1);
+                break;
+            case 3:
+                DefineJoyBtns ();
+                DrawCustJoy (0);
+                break;
+        }
+    }
+    while (which >= 0);
+
+    MenuFadeOut ();
+
+    return 0;
+}
+
+
+int
 CustomControls (int)
 {
     int which;
@@ -2299,12 +2345,8 @@ CustomControls (int)
         switch (which)
         {
             case 0:
-                DefineJoy2Btns ();
-                DrawCustJoy2 (1);
-                break;
-            case 3:
-                DefineJoyBtns ();
-                DrawCustJoy (0);
+                DefineMouseBtns ();
+                DrawCustMouse (1);
                 break;
             case 6:
                 DefineKeyBtns ();
@@ -2320,6 +2362,18 @@ CustomControls (int)
     MenuFadeOut ();
 
     return 0;
+}
+
+
+////////////////////////
+//
+// DEFINE THE MOUSE BUTTONS
+//
+void
+DefineMouseBtns (void)
+{
+    CustomCtrls mouseallowed = { 0, 1, 1, 1 };
+    EnterCtrlData (2, &mouseallowed, DrawCustMouse, PrintCustMouse, MOUSE);
 }
 
 
@@ -2487,6 +2541,36 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
                 //
                 switch (type)
                 {
+                    case MOUSE:
+                        button = IN_MouseButtons();
+                        switch (button)
+                        {
+                            case 1:
+                                result = 1;
+                                break;
+                            case 2:
+                                result = 2;
+                                break;
+                            case 4:
+                                result = 3;
+                                break;
+                        }
+
+                        if (result)
+                        {
+                            for (int z = 0; z < 4; z++)
+                                if (order[which] == buttonmouse[z])
+                                {
+                                    buttonmouse[z] = bt_nobutton;
+                                    break;
+                                }
+
+                            buttonmouse[result - 1] = order[which];
+                            picked = 1;
+                            SD_PlaySound (SHOOTDOORSND);
+                        }
+                        break;
+
                     case JOYSTICK2:
                         if (ci.button0)
                             result = 1;
@@ -2744,13 +2828,12 @@ FixupCustom (int w)
     lastwhich = w;
 }
 
-
 ////////////////////////
 //
 // DRAW CUSTOMIZE SCREEN
 //
 void
-DrawCustomScreen (void)
+DrawCustomJoyScreen (void)
 {
     int i;
 
@@ -2861,7 +2944,99 @@ DrawCustomScreen (void)
     DrawWindow (5, PrintY - 1, 310, 13, BKGDCOLOR);
     DrawCustJoy (0);
     US_Print ("\n");
+#endif
+    //
+    // PICK STARTING POINT IN MENU
+    //
+    if (CusJoyItems.curpos < 0)
+        for (i = 0; i < CusJoyItems.amount; i++)
+            if (CusJoyMenu[i].active)
+            {
+                CusJoyItems.curpos = i;
+                break;
+            }
 
+
+    VW_UpdateScreen ();
+    MenuFadeIn ();
+}
+
+
+////////////////////////
+//
+// DRAW CUSTOMIZE SCREEN
+//
+void
+DrawCustomScreen (void)
+{
+    int i;
+
+
+#ifdef JAPAN
+    CA_CacheScreen (S_CUSTOMPIC);
+    fontnumber = 1;
+
+    PrintX = CST_START;
+    PrintY = CST_Y + 26;
+    DrawCustMouse (0);
+
+    PrintX = CST_START;
+    US_Print ("\n\n\n");
+    DrawCustKeybd (0);
+
+    PrintX = CST_START;
+    US_Print ("\n\n\n");
+    DrawCustKeys (0);
+#else
+    ClearMScreen ();
+    WindowX = 0;
+    WindowW = 320;
+    VWB_DrawPic (112, 184, C_MOUSELBACKPIC);
+    DrawStripes (10);
+    VWB_DrawPic (80, 0, C_CUSTOMIZEPIC);
+
+    //
+    // MOUSE
+    //
+    SETFONTCOLOR (READCOLOR, BKGDCOLOR);
+    WindowX = 0;
+    WindowW = 320;
+
+#ifndef SPEAR
+    PrintY = CST_Y;
+    US_CPrint ("Mouse\n");
+#else
+    PrintY = CST_Y + 13;
+    VWB_DrawPic (128, 48, C_MOUSEPIC);
+#endif
+
+    SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
+#ifdef SPANISH
+    PrintX = CST_START - 16;
+    US_Print (STR_CRUN);
+    PrintX = CST_START - 16 + CST_SPC * 1;
+    US_Print (STR_COPEN);
+    PrintX = CST_START - 16 + CST_SPC * 2;
+    US_Print (STR_CFIRE);
+    PrintX = CST_START - 16 + CST_SPC * 3;
+    US_Print (STR_CSTRAFE "\n");
+#else
+    PrintX = CST_START;
+    US_Print (STR_CRUN);
+    PrintX = CST_START + CST_SPC * 1;
+    US_Print (STR_COPEN);
+    PrintX = CST_START + CST_SPC * 2;
+    US_Print (STR_CFIRE);
+    PrintX = CST_START + CST_SPC * 3;
+    US_Print (STR_CSTRAFE "\n");
+#endif
+
+    DrawWindow (5, PrintY - 1, 310, 13, BKGDCOLOR);
+    DrawCustMouse (0);
+    US_Print ("\n");
+    US_Print ("\n");
+    US_Print ("\n");
+    PrintY += 13;
 
     //
     // KEYBOARD
@@ -2941,6 +3116,44 @@ DrawCustomScreen (void)
 
 
 void
+PrintCustMouse (int i)
+{
+    int j;
+
+    for (j = 0; j < 4; j++)
+        if (order[i] == buttonmouse[j])
+        {
+            PrintX = CST_START + CST_SPC * i;
+            US_Print (mbarray[j]);
+            break;
+        }
+}
+
+void
+DrawCustMouse (int hilight)
+{
+    int i, color;
+
+
+    color = TEXTCOLOR;
+    if (hilight)
+        color = HIGHLIGHT;
+    SETFONTCOLOR (color, BKGDCOLOR);
+
+    if (!mouseenabled)
+    {
+        SETFONTCOLOR (DEACTIVE, BKGDCOLOR);
+        CusMenu[0].active = 0;
+    }
+    else
+        CusMenu[0].active = 1;
+
+    PrintY = CST_Y + 13 * 2;
+    for (i = 0; i < 4; i++)
+        PrintCustMouse (i);
+}
+
+void
 PrintCustJoy2 (int i)
 {
     int j;
@@ -2969,10 +3182,10 @@ DrawCustJoy2 (int hilight)
     if (!joystickenabled)
     {
         SETFONTCOLOR (DEACTIVE, BKGDCOLOR);
-        CusMenu[0].active = 0;
+        CusJoyMenu[0].active = 0;
     }
     else
-        CusMenu[0].active = 1;
+        CusJoyMenu[0].active = 1;
 
     // Clear text
     VWB_Bar (60, CST_Y + 13 * 2, 250, 12, BKGDCOLOR);
@@ -3009,10 +3222,10 @@ DrawCustJoy (int hilight)
     if (!joystickenabled)
     {
         SETFONTCOLOR (DEACTIVE, BKGDCOLOR);
-        CusMenu[3].active = 0;
+        CusJoyMenu[3].active = 0;
     }
     else
-        CusMenu[3].active = 1;
+        CusJoyMenu[3].active = 1;
 
     // Clear text
     VWB_Bar (60, CST_Y + 13 * 5, 250, 12, BKGDCOLOR);
