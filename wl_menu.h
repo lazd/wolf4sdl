@@ -167,7 +167,7 @@ void DrawLoadSaveScreen(int loadsave);
 void DrawNewEpisode(void);
 void DrawNewGame(void);
 void DrawChangeView(int view);
-void DrawMouseSens(void);
+void DrawSlider(int value);
 void DrawCtlScreen(void);
 void DrawCustomScreen(void);
 void DrawLSAction(int which);
@@ -198,6 +198,7 @@ int  CP_EndGame(int);
 int  CP_CheckQuick(ScanCode scancode);
 int CustomControls(int);
 int MouseSensitivity(int);
+int JoySensitivity(int);
 
 void CheckForEpisodes(void);
 

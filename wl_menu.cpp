@@ -120,9 +120,9 @@ CP_itemtype SndMenu[] = {
 };
 
 #ifdef JAPAN
-enum { CTL_MOUSEENABLE, CTL_JOYENABLE, CTL_JOY2BUTTONUNKNOWN, CTL_GAMEPADUNKONWN, CTL_MOUSESENS, CTL_CUSTOMIZE };
+enum { CTL_MOUSEENABLE, CTL_JOYENABLE, CTL_JOY2BUTTONUNKNOWN, CTL_GAMEPADUNKONWN, CTL_MOUSESENS, CTL_JOYSENS, CTL_CUSTOMIZE };
 #else
-enum { CTL_MOUSEENABLE, CTL_MOUSESENS, CTL_JOYENABLE, CTL_CUSTOMIZE };
+enum { CTL_MOUSEENABLE, CTL_MOUSESENS, CTL_JOYENABLE, CTL_JOYSENS, CTL_CUSTOMIZE };
 #endif
 
 CP_itemtype CtlMenu[] = {
@@ -132,11 +132,13 @@ CP_itemtype CtlMenu[] = {
     {0, "", 0},
     {0, "", 0},
     {0, "", MouseSensitivity},
+    {0, "", JoySensitivity},
     {1, "", CustomControls}
 #else
     {0, STR_MOUSEEN, 0},
     {0, STR_SENS, MouseSensitivity},
     {0, STR_JOYEN, 0},
+    {0, STR_JOYSENS, JoySensitivity},
     {1, STR_CUSTOM, CustomControls}
 #endif
 };
@@ -1985,6 +1987,7 @@ CP_Control (int)
                 break;
 
             case CTL_MOUSESENS:
+            case CTL_JOYSENS:
             case CTL_CUSTOMIZE:
                 DrawCtlScreen ();
                 MenuFadeIn ();
@@ -2009,7 +2012,7 @@ CP_Control (int)
 // DRAW MOUSE SENSITIVITY SCREEN
 //
 void
-DrawMouseSens (void)
+DrawSlider (int value, const char *sorg)
 {
 #ifdef JAPAN
     CA_CacheScreen (S_MOUSESENSPIC);
@@ -2026,7 +2029,7 @@ DrawMouseSens (void)
     WindowW = 320;
     PrintY = 82;
     SETFONTCOLOR (READCOLOR, BKGDCOLOR);
-    US_CPrint (STR_MOUSEADJ);
+    US_CPrint (sorg);
 
     SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
 #ifdef SPANISH
@@ -2046,13 +2049,86 @@ DrawMouseSens (void)
 
     VWB_Bar (60, 97, 200, 10, TEXTCOLOR);
     DrawOutline (60, 97, 200, 10, 0, HIGHLIGHT);
-    DrawOutline (60 + 20 * mouseadjustment, 97, 20, 10, 0, READCOLOR);
-    VWB_Bar (61 + 20 * mouseadjustment, 98, 19, 9, READHCOLOR);
+    DrawOutline (60 + 20 * value, 97, 20, 10, 0, READCOLOR);
+    VWB_Bar (61 + 20 * value, 98, 19, 9, READHCOLOR);
 
     VW_UpdateScreen ();
     MenuFadeIn ();
 }
 
+///////////////////////////
+//
+// ADJUST MOUSE SENSITIVITY
+//
+int
+JoySensitivity (int)
+{
+    ControlInfo ci;
+    int exit = 0, oldJA;
+
+
+    oldJA = joyadjustment;
+    DrawSlider (joyadjustment, STR_JOYADJ);
+    do
+    {
+        SDL_Delay(5);
+        ReadAnyControl (&ci);
+        switch (ci.dir)
+        {
+            case dir_North:
+            case dir_West:
+                if (joyadjustment)
+                {
+                    joyadjustment--;
+                    VWB_Bar (60, 97, 200, 10, TEXTCOLOR);
+                    DrawOutline (60, 97, 200, 10, 0, HIGHLIGHT);
+                    DrawOutline (60 + 20 * joyadjustment, 97, 20, 10, 0, READCOLOR);
+                    VWB_Bar (61 + 20 * joyadjustment, 98, 19, 9, READHCOLOR);
+                    VW_UpdateScreen ();
+                    SD_PlaySound (MOVEGUN1SND);
+                    TicDelay(20);
+                }
+                break;
+
+            case dir_South:
+            case dir_East:
+                if (joyadjustment < 9)
+                {
+                    joyadjustment++;
+                    VWB_Bar (60, 97, 200, 10, TEXTCOLOR);
+                    DrawOutline (60, 97, 200, 10, 0, HIGHLIGHT);
+                    DrawOutline (60 + 20 * joyadjustment, 97, 20, 10, 0, READCOLOR);
+                    VWB_Bar (61 + 20 * joyadjustment, 98, 19, 9, READHCOLOR);
+                    VW_UpdateScreen ();
+                    SD_PlaySound (MOVEGUN1SND);
+                    TicDelay(20);
+                }
+                break;
+            default:
+                break;
+        }
+
+        if (ci.button0 || Keyboard[sc_Space] || Keyboard[sc_Enter])
+            exit = 1;
+        else if (ci.button1 || Keyboard[sc_Escape])
+            exit = 2;
+
+    }
+    while (!exit);
+
+    if (exit == 2)
+    {
+        joyadjustment = oldJA;
+        SD_PlaySound (ESCPRESSEDSND);
+    }
+    else
+        SD_PlaySound (SHOOTSND);
+
+    WaitKeyUp ();
+    MenuFadeOut ();
+
+    return 0;
+}
 
 ///////////////////////////
 //
@@ -2066,7 +2142,7 @@ MouseSensitivity (int)
 
 
     oldMA = mouseadjustment;
-    DrawMouseSens ();
+    DrawSlider (mouseadjustment, STR_MOUSEADJ);
     do
     {
         SDL_Delay(5);
@@ -2145,14 +2221,17 @@ DrawCtlScreen (void)
     DrawStripes (10);
     VWB_DrawPic (80, 0, C_CONTROLPIC);
     VWB_DrawPic (112, 184, C_MOUSELBACKPIC);
-    DrawWindow (CTL_X - 8, CTL_Y - 5, CTL_W, CTL_H, BKGDCOLOR);
+    DrawWindow (CTL_X - 8, CTL_Y - 5, CTL_W, lengthof(CtlMenu) * 15, BKGDCOLOR);
 #endif
     WindowX = 0;
     WindowW = 320;
     SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
 
     if (IN_JoyPresent())
+    {
         CtlMenu[CTL_JOYENABLE].active = 1;
+        CtlMenu[CTL_JOYSENS].active = 1;
+    }
 
     if (MousePresent)
     {
@@ -2712,7 +2791,7 @@ DrawCustomScreen (void)
 
 #ifndef SPEAR
     PrintY = CST_Y;
-    US_CPrint ("Game Controller\n");
+    US_CPrint ("Gamepad\n");
 #else
     PrintY = CST_Y + 13;
     VWB_DrawPic (128, 48, C_MOUSEPIC);

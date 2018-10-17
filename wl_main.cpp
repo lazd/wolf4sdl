@@ -72,6 +72,7 @@ void    Quit (const char *error,...);
 boolean startgame;
 boolean loadedgame;
 int     mouseadjustment;
+int     joyadjustment;
 
 char    configdir[256] = "";
 char    configname[13] = "config.";
@@ -172,6 +173,7 @@ void ReadConfig(void)
 
         read(file,&viewsize,sizeof(viewsize));
         read(file,&mouseadjustment,sizeof(mouseadjustment));
+        read(file,&joyadjustment,sizeof(joyadjustment));
 
         close(file);
 
@@ -197,6 +199,9 @@ void ReadConfig(void)
 
         if(mouseadjustment<0) mouseadjustment=0;
         else if(mouseadjustment>9) mouseadjustment=9;
+
+        if(joyadjustment<0) joyadjustment=0;
+        else if(joyadjustment>9) joyadjustment=9;
 
         if(viewsize<4) viewsize=4;
         else if(viewsize>21) viewsize=21;
@@ -234,6 +239,7 @@ noconfig:
 
         viewsize = 19;                          // start with a good size
         mouseadjustment=5;
+        joyadjustment=5;
     }
 
     SD_SetMusicMode (sm);
@@ -289,6 +295,7 @@ void WriteConfig(void)
 
         write(file,&viewsize,sizeof(viewsize));
         write(file,&mouseadjustment,sizeof(mouseadjustment));
+        write(file,&joyadjustment,sizeof(joyadjustment));
 
         close(file);
     }

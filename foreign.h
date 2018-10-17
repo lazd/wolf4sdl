@@ -32,7 +32,7 @@
 #define STR_LGC		"Load Game called\n\""
 #define STR_EMPTY	"empty"
 #define STR_CALIB	"Calibrate"
-#define STR_JOYST	"Joystick"
+#define STR_JOYST	"Gamepad"
 #define STR_MOVEJOY	"Move joystick to\nupper left and\npress button 0\n"
 #define STR_MOVEJOY2 "Move joystick to\nlower right and\npress button 1\n"
 #define STR_ESCEXIT	"ESC to exit"
@@ -44,10 +44,11 @@
 #define	STR_SB		"Sound Blaster"
 
 #define	STR_MOUSEEN	"Mouse Enabled"
-#define	STR_JOYEN	"Joystick Enabled"
+#define	STR_JOYEN	"Gamepad Enabled"
 #define	STR_PORT2	"Use joystick port 2"
-#define	STR_GAMEPAD	"Gravis GamePad Enabled"
-#define	STR_SENS	"Mouse Sensitivity"
+#define	STR_GAMEPAD	"Gamepad Enabled"
+#define STR_SENS  "Mouse Sensitivity"
+#define	STR_JOYSENS	"Gamepad Sensitivity"
 #define	STR_CUSTOM	"Customize controls"
 
 #define	STR_DADDY	"Can I play, Daddy?"
@@ -55,7 +56,8 @@
 #define	STR_BRINGEM	"Bring 'em on!"
 #define	STR_DEATH	"I am Death incarnate!"
 
-#define	STR_MOUSEADJ	"Adjust Mouse Sensitivity"
+#define STR_MOUSEADJ  "Adjust Mouse Sensitivity"
+#define	STR_JOYADJ	"Adjust Gamepad Sensitivity"
 #define STR_SLOW	    "Slow"
 #define STR_FAST	    "Fast"
 

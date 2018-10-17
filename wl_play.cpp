@@ -378,6 +378,9 @@ void PollJoystickMove (void)
         newcontroly = (int) ((abs(joyy) / 127.0) * delta);
     }
 
+    // Multiply out joy adjustment
+    newcontrolx = (int) (newcontrolx * (((joyadjustment + 1) + 5) / 10.0));
+
     if (joyx > JOYDEADZONE || buttonstate[bt_turnright])
         controlx += newcontrolx;
     else if (joyx < -JOYDEADZONE || buttonstate[bt_turnleft])

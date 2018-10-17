@@ -173,9 +173,12 @@ void ControlMovement (objtype *ob)
     oldy = player->y;
 
     int joyx, joyy;
-    IN_GetJoyDelta (&joyx, &joyy, SDL_CONTROLLER_AXIS_LEFTX, SDL_CONTROLLER_AXIS_RIGHTY);
+    float joyfactor = 1;
+    if (joystickenabled) {
+        IN_GetJoyDelta (&joyx, &joyy, SDL_CONTROLLER_AXIS_LEFTX, SDL_CONTROLLER_AXIS_RIGHTY);
+        joyfactor = abs(joyx) / 127.0;
+    }
 
-    float joyfactor = abs(joyx) / 127.0;
     if(buttonstate[bt_strafeleft] || joyx < -JOYDEADZONE)
     {
         angle = ob->angle + ANGLES/4;
