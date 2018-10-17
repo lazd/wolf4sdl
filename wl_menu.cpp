@@ -2245,10 +2245,12 @@ DrawCtlScreen (void)
 
     if (IN_JoyPresent())
     {
-        CtlMenu[CTL_CUSTOMIZEJOY].active = 1;
         CtlMenu[CTL_JOYENABLE].active = 1;
-        CtlMenu[CTL_JOYSENS].active = 1;
     }
+
+    CtlMenu[CTL_CUSTOMIZEJOY].active = joystickenabled;
+    CtlMenu[CTL_JOYSENS].active = joystickenabled;
+
 
     if (MousePresent)
     {
@@ -2758,6 +2760,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
     DrawWindow (5, PrintY - 1, 310, 13, BKGDCOLOR);
 }
 
+static int lastwhich = -1;
 
 ////////////////////////
 //
@@ -2766,9 +2769,8 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
 void
 FixupCustom (int w)
 {
-    static int lastwhich = -1;
-    int y = CST_Y + 26 + w * 13;
 
+    int y = CST_Y + 26 + w * 13;
 
     VWB_Hlin (7, 32, y - 1, DEACTIVE);
     VWB_Hlin (7, 32, y + 12, BORD2COLOR);
@@ -2779,22 +2781,6 @@ FixupCustom (int w)
     VWB_Hlin (7, 32, y - 2, BORD2COLOR);
     VWB_Hlin (7, 32, y + 13, BORD2COLOR);
 #endif
-
-    switch (w)
-    {
-        case 0:
-            DrawCustJoy2 (1);
-            break;
-        case 3:
-            DrawCustJoy (1);
-            break;
-        case 6:
-            DrawCustKeybd (1);
-            break;
-        case 8:
-            DrawCustKeys (1);
-    }
-
 
     if (lastwhich >= 0)
     {
@@ -2809,21 +2795,6 @@ FixupCustom (int w)
         VWB_Hlin (7, 32, y + 13, BORD2COLOR);
 #endif
 
-        if (lastwhich != w)
-            switch (lastwhich)
-            {
-                case 0:
-                    DrawCustJoy2 (0);
-                    break;
-                case 3:
-                    DrawCustJoy (0);
-                    break;
-                case 6:
-                    DrawCustKeybd (0);
-                    break;
-                case 8:
-                    DrawCustKeys (0);
-            }
     }
 
     lastwhich = w;
@@ -2838,6 +2809,8 @@ DrawCustomJoyScreen (void)
 {
     int i;
 
+    // Reset last menu item
+    lastwhich = -1;
 
 #ifdef JAPAN
     CA_CacheScreen (S_CUSTOMPIC);
@@ -2972,6 +2945,8 @@ DrawCustomScreen (void)
 {
     int i;
 
+    // Reset last menu item
+    lastwhich = -1;
 
 #ifdef JAPAN
     CA_CacheScreen (S_CUSTOMPIC);
