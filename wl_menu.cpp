@@ -2299,7 +2299,8 @@ DrawCtlScreen (void)
 // CUSTOMIZE CONTROLS
 //
 ////////////////////////////////////////////////////////////////////
-char mbarray[13][3] = { "A ", "B ", "X ", "Y ", "L1", "R1", "L2", "R2", "LS", "RS", "BK", "GD", "XB" };
+char joyarray[13][3] = { "A ", "B ", "X ", "Y ", "L1", "R1", "L2", "R2", "LS", "RS", "BK", "GD", "XB" };
+char mbarray[3][2] = { "L", "R", "M", };
 int8_t order[4] = { bt_run, bt_use, bt_attack, bt_strafe };
 int8_t order2[4] = { bt_pause, bt_esc, bt_prevweapon, bt_nextweapon };
 
@@ -3163,7 +3164,7 @@ PrintCustJoy2 (int i)
         if (order2[i] == buttonjoy[j])
         {
             PrintX = CST_START + CST_SPC * i;
-            US_Print (mbarray[j]);
+            US_Print (joyarray[j]);
             break;
         }
     }
@@ -3203,7 +3204,7 @@ PrintCustJoy (int i)
         if (order[i] == buttonjoy[j])
         {
             PrintX = CST_START + CST_SPC * i;
-            US_Print (mbarray[j]);
+            US_Print (joyarray[j]);
             break;
         }
     }
