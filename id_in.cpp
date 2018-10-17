@@ -409,6 +409,9 @@ void IN_ProcessEvents()
 void
 IN_Startup(void)
 {
+    // Manually work around RetroPi's funky xpad triggers_to_buttons bit
+    SDL_GameControllerAddMapping("030000005e040000dd02000003020000,Microsoft X-Box One pad (Firmware 2015),platform:Linux,a:b0,b:b1,x:b2,y:b3,back:b8,guide:b10,start:b9,leftstick:b11,rightstick:b12,leftshoulder:b4,rightshoulder:b5,dpup:h0.1,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,leftx:a0,lefty:a1,rightx:a2,righty:a3,lefttrigger:b6,righttrigger:b7");
+
 	if (IN_Started)
 		return;
 
