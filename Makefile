@@ -1,7 +1,6 @@
 CONFIG ?= config.default
 -include $(CONFIG)
 
-
 BINARY    ?= wolf3d
 PREFIX    ?= /usr/local
 DATADIR   ?= $(PREFIX)/share/games/wolf3d/
@@ -43,6 +42,31 @@ CCFLAGS += -Wimplicit-int
 CCFLAGS += -Wsequence-point
 
 CXXFLAGS += $(CFLAGS)
+
+# Add controller mappings
+define DOUBLESPACE
+  
+endef
+define SINGLESPACE
+ 
+endef
+define SDLDELIMITER
+, 
+endef
+define SDLNEWLINE
+,\n
+endef
+define SDLGREPUNIX
+grep -v '^#' SDL_GameControllerDB/gamecontrollerdb.txt
+endef
+define SDLGREPWINDOWS
+findstr /B /V # SDL_GameControllerDB/gamecontrollerdb.txt
+endef
+SDLGREPCMD := $(if $(filter $(OS),Windows_NT),$(SDLGREPWINDOWS),$(SDLGREPUNIX))
+SDLMAPPINGS := $(shell $(SDLGREPCMD))
+SDLMAPPINGS := $(subst $(DOUBLESPACE),$(SINGLESPACE),${SDLMAPPINGS})
+SDLMAPPINGS := $(subst $(SDLDELIMITER),$(SDLNEWLINE),${SDLMAPPINGS})
+CXXFLAGS += -DSDLMAPPINGS="\"$(SDLMAPPINGS)\""
 
 LDFLAGS += $(LDFLAGS_SDL)
 LDFLAGS += -lSDL2_mixer
