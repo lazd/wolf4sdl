@@ -179,7 +179,7 @@ void ControlMovement (objtype *ob)
         joyfactor = abs(joyx) / 127.0;
     }
 
-    if(buttonstate[bt_strafeleft] || joyx < -JOYDEADZONE)
+    if(buttonstate[bt_strafeleft] || (joystickenabled && joyx < -JOYDEADZONE))
     {
         angle = ob->angle + ANGLES/4;
         if(angle >= ANGLES)
@@ -190,7 +190,7 @@ void ControlMovement (objtype *ob)
             Thrust(angle, (int32_t) (joyfactor * BASEMOVE * MOVESCALE * tics));
     }
 
-    if(buttonstate[bt_straferight] || joyx > JOYDEADZONE)
+    if(buttonstate[bt_straferight] || (joystickenabled && joyx > JOYDEADZONE))
     {
         angle = ob->angle - ANGLES/4;
         if(angle < 0)
