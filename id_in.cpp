@@ -59,6 +59,7 @@ static KeyboardDef KbdDefs = {
 static SDL_Joystick *Joystick;
 static SDL_GameController *GameController;
 int JoyNumButtons;
+int JoyNumAxes;
 static int JoyNumHats;
 
 static bool GrabInput = false;
@@ -434,6 +435,7 @@ IN_Startup(void)
 
         if(Joystick)
         {
+            JoyNumAxes = SDL_JoystickNumAxes(Joystick);
             JoyNumButtons = SDL_JoystickNumButtons(Joystick);
             if(JoyNumButtons > 32) JoyNumButtons = 32;      // only up to 32 buttons are supported
             JoyNumHats = SDL_JoystickNumHats(Joystick);

@@ -174,12 +174,15 @@ void ControlMovement (objtype *ob)
 
     int joyx, joyy;
     float joyfactor = 1;
-    if (joystickenabled) {
+    bool joystrafe = false;
+    if (joystickenabled && JoyNumAxes >= 4) {
+        // Enable strafing with the left stick if we have two sticks
+        joystrafe = true;
         IN_GetJoyDelta (&joyx, &joyy, SDL_CONTROLLER_AXIS_LEFTX, SDL_CONTROLLER_AXIS_RIGHTY);
         joyfactor = abs(joyx) / 127.0;
     }
 
-    if(buttonstate[bt_strafeleft] || (joystickenabled && joyx < -JOYDEADZONE))
+    if(buttonstate[bt_strafeleft] || (joystrafe && joyx < -JOYDEADZONE))
     {
         angle = ob->angle + ANGLES/4;
         if(angle >= ANGLES)
@@ -190,7 +193,7 @@ void ControlMovement (objtype *ob)
             Thrust(angle, (int32_t) (joyfactor * BASEMOVE * MOVESCALE * tics));
     }
 
-    if(buttonstate[bt_straferight] || (joystickenabled && joyx > JOYDEADZONE))
+    if(buttonstate[bt_straferight] || (joystrafe && joyx > JOYDEADZONE))
     {
         angle = ob->angle - ANGLES/4;
         if(angle < 0)

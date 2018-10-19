@@ -364,7 +364,8 @@ void PollJoystickMove (void)
 {
     int joyx, joyy;
 
-    IN_GetJoyDelta (&joyx, &joyy, SDL_CONTROLLER_AXIS_RIGHTX, SDL_CONTROLLER_AXIS_LEFTY);
+    // Turn with the left stick X axis if there is only one stick
+    IN_GetJoyDelta (&joyx, &joyy, JoyNumAxes >= 4 ? SDL_CONTROLLER_AXIS_RIGHTX : SDL_CONTROLLER_AXIS_LEFTX, SDL_CONTROLLER_AXIS_LEFTY);
 
     int delta = buttonstate[bt_run] ? RUNMOVE * tics : BASEMOVE * tics;
 
