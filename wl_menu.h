@@ -159,6 +159,7 @@ void DefineMouseBtns(void);
 void DefineJoy2Btns(void);
 void DefineJoyBtns(void);
 void DefineKeyBtns(void);
+void DefineKeyBtns2(void);
 void DefineKeyMove(void);
 void EnterCtrlData(int index,CustomCtrls *cust,void (*DrawRtn)(int),void (*PrintRtn)(int),int type);
 
@@ -177,11 +178,13 @@ void DrawCustMouse(int hilight);
 void DrawCustJoy2(int hilight);
 void DrawCustJoy(int hilight);
 void DrawCustKeybd(int hilight);
+void DrawCustKeybd2(int hilight);
 void DrawCustKeys(int hilight);
 void PrintCustMouse(int i);
 void PrintCustJoy2(int i);
 void PrintCustJoy(int i);
 void PrintCustKeybd(int i);
+void PrintCustKeybd2(int i);
 void PrintCustKeys(int i);
 
 void PrintLSEntry(int w,int color);
@@ -210,7 +213,7 @@ void CheckForEpisodes(void);
 void FreeMusic(void);
 
 
-enum {MOUSE,JOYSTICK,JOYSTICK2,KEYBOARDBTNS,KEYBOARDMOVE};        // FOR INPUT TYPES
+enum {MOUSE,JOYSTICK,JOYSTICK2,KEYBOARDBTNS,KEYBOARDBTNS2,KEYBOARDMOVE};        // FOR INPUT TYPES
 
 enum menuitems
 {

@@ -71,6 +71,8 @@
 #define STR_CNEXTWEP "Wep+"
 #define STR_CPAUSE "Pause"
 #define STR_CESCAPE "Esc"
+#define STR_CSTRAFELEFT "StrfL"
+#define STR_CSTRAFERIGHT "StrfR"
 
 #define	STR_LEFT	"Left"
 #define	STR_RIGHT	"Right"

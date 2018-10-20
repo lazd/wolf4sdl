@@ -173,35 +173,50 @@ void ControlMovement (objtype *ob)
     oldy = player->y;
 
     int joyx, joyy;
-    float joyfactor = 1;
-    bool joystrafe = false;
-    if (joystickenabled && JoyNumAxes >= 4) {
-        // Enable strafing with the left stick if we have two sticks
-        joystrafe = true;
+    int32_t runspeed = RUNMOVE * MOVESCALE * tics;
+    int32_t walkspeed = BASEMOVE * MOVESCALE * tics;
+    bool joystrafeleft = false;
+    bool joystraferight = false;
+    if (joystickenabled && JoyNumAxes >= 4)
+    {
         IN_GetJoyDelta (&joyx, &joyy, SDL_CONTROLLER_AXIS_LEFTX, SDL_CONTROLLER_AXIS_RIGHTY);
-        joyfactor = abs(joyx) / 127.0;
+        float joyfactor = abs(joyx) / 127.0;
+
+        joystrafeleft = joyx < -JOYDEADZONE;
+        joystraferight = joyx > JOYDEADZONE;
+
+        // Only adjust run speed if we're controlling with the joystick
+        // Otherewise, keyboard strafe won't work at the same time as joystick
+        if (joystrafeleft || joystraferight)
+        {
+            runspeed = runspeed * joyfactor;
+            walkspeed = walkspeed * joyfactor;
+        }
     }
 
-    if(buttonstate[bt_strafeleft] || (joystrafe && joyx < -JOYDEADZONE))
+    bool strafeleft = buttonstate[bt_strafeleft] || joystrafeleft;
+    bool straferight = buttonstate[bt_straferight] || joystraferight;
+
+    if(strafeleft)
     {
         angle = ob->angle + ANGLES/4;
         if(angle >= ANGLES)
             angle -= ANGLES;
-        if(buttonstate[bt_run])
-            Thrust(angle, (int32_t) (joyfactor * RUNMOVE * MOVESCALE * tics));
-        else
-            Thrust(angle, (int32_t) (joyfactor * BASEMOVE * MOVESCALE * tics));
     }
 
-    if(buttonstate[bt_straferight] || (joystrafe && joyx > JOYDEADZONE))
+    if(straferight)
     {
         angle = ob->angle - ANGLES/4;
         if(angle < 0)
             angle += ANGLES;
+    }
+
+    if (strafeleft || straferight)
+    {
         if(buttonstate[bt_run])
-            Thrust(angle, (int32_t) (joyfactor * RUNMOVE * MOVESCALE * tics));
+            Thrust(angle, runspeed);
         else
-            Thrust(angle, (int32_t) (joyfactor * BASEMOVE * MOVESCALE * tics));
+            Thrust(angle, walkspeed);
     }
 
     //

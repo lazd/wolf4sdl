@@ -239,12 +239,12 @@ CP_itemtype CusMenu[] = {
     {1, "", 0},
     {0, "", 0},
     {0, "", 0},
-    {0, "", 0},
-    {0, "", 0},
+    {1, "", 0},
     {0, "", 0},
     {1, "", 0},
     {0, "", 0},
-    {1, "", 0}
+    {1, "", 0},
+    {0, "", 0}
 };
 
 CP_itemtype CusJoyMenu[] = {
@@ -296,6 +296,7 @@ static char SaveGameNames[10][32];
 static char SaveName[13] = "savegam?.";
 
 #define MENUSPACING     13
+#define MENUWIDTH       310
 #define MENUPADDING     5
 #define RADIOOFFSET     3
 
@@ -2323,6 +2324,7 @@ char joyarray[13][3] = { "A ", "B ", "X ", "Y ", "L1", "R1", "L2", "R2", "LS", "
 char mbarray[3][2] = { "L", "R", "M", };
 int8_t order[4] = { bt_run, bt_use, bt_attack, bt_strafe };
 int8_t order2[4] = { bt_pause, bt_esc, bt_prevweapon, bt_nextweapon };
+int8_t order3[4] = { bt_nextweapon, bt_prevweapon, bt_strafeleft, bt_straferight };
 
 
 int
@@ -2369,13 +2371,17 @@ CustomControls (int)
                 DefineMouseBtns ();
                 DrawCustMouse (1);
                 break;
-            case 6:
+            case 3:
                 DefineKeyBtns ();
                 DrawCustKeybd (0);
                 break;
-            case 8:
+            case 5:
                 DefineKeyMove ();
                 DrawCustKeys (0);
+            case 7:
+                DefineKeyBtns2 ();
+                DrawCustKeybd2 (0);
+                break;
         }
     }
     while (which >= 0);
@@ -2430,7 +2436,19 @@ void
 DefineKeyBtns (void)
 {
     CustomCtrls keyallowed = { 1, 1, 1, 1 };
-    EnterCtrlData (8, &keyallowed, DrawCustKeybd, PrintCustKeybd, KEYBOARDBTNS);
+    EnterCtrlData (5, &keyallowed, DrawCustKeybd, PrintCustKeybd, KEYBOARDBTNS);
+}
+
+
+////////////////////////
+//
+// DEFINE THE KEYBOARD BUTTONS
+//
+void
+DefineKeyBtns2 (void)
+{
+    CustomCtrls keyallowed = { 1, 1, 1, 1 };
+    EnterCtrlData (9, &keyallowed, DrawCustKeybd2, PrintCustKeybd2, KEYBOARDBTNS2);
 }
 
 
@@ -2442,7 +2460,7 @@ void
 DefineKeyMove (void)
 {
     CustomCtrls keyallowed = { 1, 1, 1, 1 };
-    EnterCtrlData (10, &keyallowed, DrawCustKeys, PrintCustKeys, KEYBOARDMOVE);
+    EnterCtrlData (7, &keyallowed, DrawCustKeys, PrintCustKeys, KEYBOARDMOVE);
 }
 
 
@@ -2484,7 +2502,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
             x = CST_START + CST_SPC * which;
 
             // Clear existing text
-            DrawWindow (5, PrintY - 1, 310, 13, BKGDCOLOR);
+            DrawWindow (5, PrintY - 1, MENUWIDTH, MENUSPACING, BKGDCOLOR);
 
             // Redraw the other joystick options that could have been overwritten
             if (type == JOYSTICK)
@@ -2522,14 +2540,14 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
         //
         // CHANGE BUTTON VALUE?
         //
-        if (((type != KEYBOARDBTNS && type != KEYBOARDMOVE) && (ci.button0 || ci.button1 || ci.button2 || ci.button3 || ci.button4 || ci.button5 || ci.button6 || ci.button7 || ci.button8 || ci.button9 || ci.button10 || ci.button11 || ci.button12)) ||
-            ((type == KEYBOARDBTNS || type == KEYBOARDMOVE) && LastScan == sc_Enter))
+        if (((type != KEYBOARDBTNS && type != KEYBOARDBTNS2 && type != KEYBOARDMOVE) && (ci.button0 || ci.button1 || ci.button2 || ci.button3 || ci.button4 || ci.button5 || ci.button6 || ci.button7 || ci.button8 || ci.button9 || ci.button10 || ci.button11 || ci.button12)) ||
+            ((type == KEYBOARDBTNS || type == KEYBOARDBTNS2 || type == KEYBOARDMOVE) && LastScan == sc_Enter))
         {
             lastFlashTime = GetTimeCount();
             tick = picked = 0;
             SETFONTCOLOR (0, TEXTCOLOR);
 
-            if (type == KEYBOARDBTNS || type == KEYBOARDMOVE)
+            if (type == KEYBOARDBTNS || type == KEYBOARDBTNS2 || type == KEYBOARDMOVE)
                 IN_ClearKeysDown ();
 
             while(1)
@@ -2698,6 +2716,16 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
                         }
                         break;
 
+                    case KEYBOARDBTNS2:
+                        if (LastScan && LastScan != sc_Escape)
+                        {
+                            buttonscan[order3[which]] = LastScan;
+                            picked = 1;
+                            ShootSnd ();
+                            IN_ClearKeysDown ();
+                        }
+                        break;
+
                     case KEYBOARDMOVE:
                         if (LastScan && LastScan != sc_Escape)
                         {
@@ -2775,7 +2803,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
 
     SD_PlaySound (ESCPRESSEDSND);
     WaitKeyUp ();
-    DrawWindow (5, PrintY - 1, 310, 13, BKGDCOLOR);
+    DrawWindow (5, PrintY - 1, MENUWIDTH, MENUSPACING, BKGDCOLOR);
 }
 
 static int lastwhich = -1;
@@ -2893,7 +2921,7 @@ DrawCustomJoyScreen (void)
     US_Print (STR_CNEXTWEP "\n");
 #endif
 
-    DrawWindow (5, PrintY - 1, 310, 13, BKGDCOLOR);
+    DrawWindow (5, PrintY - 1, MENUWIDTH, MENUSPACING, BKGDCOLOR);
     DrawCustJoy2 (0);
     US_Print ("\n");
 
@@ -2905,7 +2933,7 @@ DrawCustomJoyScreen (void)
     SETFONTCOLOR (READCOLOR, BKGDCOLOR);
     US_CPrint ("\n");
 #else
-    PrintY += 13;
+    PrintY += MENUSPACING;
     VWB_DrawPic (40, 88, C_JOYSTICKPIC);
 #endif
 
@@ -2933,7 +2961,7 @@ DrawCustomJoyScreen (void)
     PrintX = CST_START + CST_SPC * 3;
     US_Print (STR_CSTRAFE "\n");
 #endif
-    DrawWindow (5, PrintY - 1, 310, 13, BKGDCOLOR);
+    DrawWindow (5, PrintY - 1, MENUWIDTH, MENUSPACING, BKGDCOLOR);
     DrawCustJoy (0);
     US_Print ("\n");
 #endif
@@ -3025,12 +3053,9 @@ DrawCustomScreen (void)
     US_Print (STR_CSTRAFE "\n");
 #endif
 
-    DrawWindow (5, PrintY - 1, 310, 13, BKGDCOLOR);
+    DrawWindow (5, PrintY - 1, MENUWIDTH, MENUSPACING, BKGDCOLOR);
     DrawCustMouse (0);
-    US_Print ("\n");
-    US_Print ("\n");
-    US_Print ("\n");
-    PrintY += 13;
+    PrintY += MENUSPACING;
 
     //
     // KEYBOARD
@@ -3039,7 +3064,7 @@ DrawCustomScreen (void)
     SETFONTCOLOR (READCOLOR, BKGDCOLOR);
     US_CPrint ("Keyboard\n");
 #else
-    PrintY += 13;
+    PrintY += MENUSPACING;
 #endif
     SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
 #ifdef SPANISH
@@ -3061,7 +3086,7 @@ DrawCustomScreen (void)
     PrintX = CST_START + CST_SPC * 3;
     US_Print (STR_CSTRAFE "\n");
 #endif
-    DrawWindow (5, PrintY - 1, 310, 13, BKGDCOLOR);
+    DrawWindow (5, PrintY - 1, MENUWIDTH, MENUSPACING, BKGDCOLOR);
     DrawCustKeybd (0);
     US_Print ("\n");
 
@@ -3089,8 +3114,36 @@ DrawCustomScreen (void)
     PrintX = CST_START + CST_SPC * 3;
     US_Print (STR_BKWD "\n");
 #endif
-    DrawWindow (5, PrintY - 1, 310, 13, BKGDCOLOR);
+    DrawWindow (5, PrintY - 1, MENUWIDTH, MENUSPACING, BKGDCOLOR);
     DrawCustKeys (0);
+    US_Print ("\n");
+
+    //
+    // KEYBOARD EXTRA KEYS
+    //
+    SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
+#ifdef SPANISH
+    PrintX = 4;
+    US_Print (STR_CNEXTWEP);
+    US_Print ("/");
+    US_Print (STR_CPREVWEP);
+    US_Print ("/");
+    US_Print (STR_CSTRAFELEFT);
+    US_Print ("/");
+    US_Print (STR_CSTRAFERIGHT "\n");
+#else
+    PrintX = CST_START;
+    US_Print (STR_CNEXTWEP);
+    PrintX = CST_START + CST_SPC * 1;
+    US_Print (STR_CPREVWEP);
+    PrintX = CST_START + CST_SPC * 2;
+    US_Print (STR_CSTRAFELEFT);
+    PrintX = CST_START + CST_SPC * 3;
+    US_Print (STR_CSTRAFERIGHT "\n");
+#endif
+    DrawWindow (5, PrintY - 1, MENUWIDTH, MENUSPACING, BKGDCOLOR);
+    DrawCustKeybd2 (0);
+
 #endif
     //
     // PICK STARTING POINT IN MENU
@@ -3142,7 +3195,7 @@ DrawCustMouse (int hilight)
     else
         CusMenu[0].active = 1;
 
-    PrintY = CST_Y + 13 * 2;
+    PrintY = CST_Y + MENUSPACING * 2;
     for (i = 0; i < 4; i++)
         PrintCustMouse (i);
 }
@@ -3182,7 +3235,7 @@ DrawCustJoy2 (int hilight)
         CusJoyMenu[0].active = 1;
 
     // Clear text
-    VWB_Bar (60, CST_Y + 13 * 2, 250, 12, BKGDCOLOR);
+    VWB_Bar (60, CST_Y + MENUSPACING * 2, 250, 12, BKGDCOLOR);
 
     PrintY = CST_Y + 13 * 2;
     for (i = 0; i < 4; i++)
@@ -3222,7 +3275,7 @@ DrawCustJoy (int hilight)
         CusJoyMenu[3].active = 1;
 
     // Clear text
-    VWB_Bar (60, CST_Y + 13 * 5, 250, 12, BKGDCOLOR);
+    VWB_Bar (60, CST_Y + MENUSPACING * 5, 250, 12, BKGDCOLOR);
 
     PrintY = CST_Y + 13 * 5;
     for (i = 0; i < 4; i++)
@@ -3248,9 +3301,32 @@ DrawCustKeybd (int hilight)
         color = HIGHLIGHT;
     SETFONTCOLOR (color, BKGDCOLOR);
 
-    PrintY = CST_Y + 13 * 8;
+    PrintY = CST_Y + MENUSPACING * 5;
     for (i = 0; i < 4; i++)
         PrintCustKeybd (i);
+}
+
+void
+PrintCustKeybd2 (int i)
+{
+    PrintX = CST_START + CST_SPC * i;
+    US_Print ((const char *) IN_GetScanName (buttonscan[order3[i]]));
+}
+
+void
+DrawCustKeybd2 (int hilight)
+{
+    int i, color;
+
+
+    color = TEXTCOLOR;
+    if (hilight)
+        color = HIGHLIGHT;
+    SETFONTCOLOR (color, BKGDCOLOR);
+
+    PrintY = CST_Y + MENUSPACING * 9;
+    for (i = 0; i < 4; i++)
+        PrintCustKeybd2 (i);
 }
 
 void
@@ -3271,7 +3347,7 @@ DrawCustKeys (int hilight)
         color = HIGHLIGHT;
     SETFONTCOLOR (color, BKGDCOLOR);
 
-    PrintY = CST_Y + 13 * 10;
+    PrintY = CST_Y + MENUSPACING * 7;
     for (i = 0; i < 4; i++)
         PrintCustKeys (i);
 }
