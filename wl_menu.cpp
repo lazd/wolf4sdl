@@ -120,13 +120,14 @@ CP_itemtype SndMenu[] = {
 };
 
 #ifdef JAPAN
-enum { CTL_MOUSEENABLE, CTL_JOYENABLE, CTL_JOY2BUTTONUNKNOWN, CTL_GAMEPADUNKONWN, CTL_MOUSESENS, CTL_JOYSENS, CTL_CUSTOMIZEKB, CTL_CUSTOMIZEJOY };
+enum { CTL_MOUSEENABLE, CTL_MOVEWITHMOUSE, CTL_JOYENABLE, CTL_JOY2BUTTONUNKNOWN, CTL_GAMEPADUNKONWN, CTL_MOUSESENS, CTL_JOYSENS, CTL_CUSTOMIZEKB, CTL_CUSTOMIZEJOY };
 #else
-enum { CTL_MOUSEENABLE, CTL_MOUSESENS, CTL_JOYENABLE, CTL_JOYSENS, CTL_CUSTOMIZEKB, CTL_CUSTOMIZEJOY };
+enum { CTL_MOUSEENABLE, CTL_MOVEWITHMOUSE, CTL_MOUSESENS, CTL_CUSTOMIZEKB, CTL_JOYENABLE, CTL_JOYSENS, CTL_CUSTOMIZEJOY };
 #endif
 
 CP_itemtype CtlMenu[] = {
 #ifdef JAPAN
+    {0, "", 0},
     {0, "", 0},
     {0, "", 0},
     {0, "", 0},
@@ -137,10 +138,11 @@ CP_itemtype CtlMenu[] = {
     {0, "", CustomGamepadControls}
 #else
     {0, STR_MOUSEEN, 0},
+    {0, STR_MOVEWITHMOUSE, 0},
     {0, STR_SENS, MouseSensitivity},
+    {1, STR_CUSTOM, CustomControls},
     {0, STR_JOYEN, 0},
     {0, STR_JOYSENS, JoySensitivity},
-    {1, STR_CUSTOM, CustomControls},
     {0, STR_CUSTOMJOY, CustomGamepadControls}
 #endif
 };
@@ -293,6 +295,9 @@ static int pickquick;
 static char SaveGameNames[10][32];
 static char SaveName[13] = "savegam?.";
 
+#define MENUSPACING     13
+#define MENUPADDING     5
+#define RADIOOFFSET     3
 
 ////////////////////////////////////////////////////////////////////
 //
@@ -1994,6 +1999,13 @@ CP_Control (int)
                 ShootSnd ();
                 break;
 
+            case CTL_MOVEWITHMOUSE:
+                movewithmouse ^= 1;
+                DrawCtlScreen ();
+                CusItems.curpos = -1;
+                ShootSnd ();
+                break;
+
             case CTL_JOYENABLE:
                 joystickenabled ^= 1;
                 DrawCtlScreen ();
@@ -2237,7 +2249,7 @@ DrawCtlScreen (void)
     DrawStripes (10);
     VWB_DrawPic (80, 0, C_CONTROLPIC);
     VWB_DrawPic (112, 184, C_MOUSELBACKPIC);
-    DrawWindow (CTL_X - 8, CTL_Y - 5, CTL_W, lengthof(CtlMenu) * 15, BKGDCOLOR);
+    DrawWindow (CTL_X - 8, CTL_Y - MENUPADDING, CTL_W, lengthof(CtlMenu) * MENUSPACING + MENUPADDING * 2, BKGDCOLOR);
 #endif
     WindowX = 0;
     WindowW = 320;
@@ -2258,19 +2270,25 @@ DrawCtlScreen (void)
     }
 
     CtlMenu[CTL_MOUSESENS].active = mouseenabled;
+    CtlMenu[CTL_MOVEWITHMOUSE].active = mouseenabled;
 
 
     DrawMenu (&CtlItems, CtlMenu);
 
-
     x = CTL_X + CtlItems.indent - 24;
-    y = CTL_Y + 3;
+    y = CTL_Y + RADIOOFFSET;
     if (mouseenabled)
         VWB_DrawPic (x, y, C_SELECTEDPIC);
     else
         VWB_DrawPic (x, y, C_NOTSELECTEDPIC);
 
-    y = CTL_Y + 29;
+    y = CTL_Y + MENUSPACING + RADIOOFFSET;
+    if (movewithmouse)
+        VWB_DrawPic (x, y, C_SELECTEDPIC);
+    else
+        VWB_DrawPic (x, y, C_NOTSELECTEDPIC);
+
+    y = CTL_Y + (MENUSPACING * 4) + RADIOOFFSET;
     if (joystickenabled)
         VWB_DrawPic (x, y, C_SELECTEDPIC);
     else

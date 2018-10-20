@@ -174,6 +174,7 @@ void ReadConfig(void)
         read(file,&viewsize,sizeof(viewsize));
         read(file,&mouseadjustment,sizeof(mouseadjustment));
         read(file,&joyadjustment,sizeof(joyadjustment));
+        read(file,&movewithmouse,sizeof(movewithmouse));
 
         close(file);
 
@@ -191,9 +192,13 @@ void ReadConfig(void)
 
         if(mouseenabled) mouseenabled=true;
         if(joystickenabled) joystickenabled=true;
+        if(movewithmouse) movewithmouse=true;
 
         if (!MousePresent)
+        {
             mouseenabled = false;
+            movewithmouse = false;
+        }
         if (!IN_JoyPresent())
             joystickenabled = false;
 
@@ -296,6 +301,7 @@ void WriteConfig(void)
         write(file,&viewsize,sizeof(viewsize));
         write(file,&mouseadjustment,sizeof(mouseadjustment));
         write(file,&joyadjustment,sizeof(joyadjustment));
+        write(file,&movewithmouse,sizeof(movewithmouse));
 
         close(file);
     }
