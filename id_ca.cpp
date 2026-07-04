@@ -83,14 +83,6 @@ int     numEpisodesMissing = 0;
 char extension[5]; // Need a string, not constant to change cache files
 char graphext[5];
 char audioext[5];
-static const char gheadname[] = DATADIR "vgahead.";
-static const char gfilename[] = DATADIR "vgagraph.";
-static const char gdictname[] = DATADIR "vgadict.";
-static const char mheadname[] = DATADIR "maphead.";
-static const char mfilename[] = DATADIR "maptemp.";
-static const char mfilecama[] = DATADIR "gamemaps.";
-static const char aheadname[] = DATADIR "audiohed.";
-static const char afilename[] = DATADIR "audiot.";
 
 void CA_CannotOpen(const char *string);
 
@@ -446,7 +438,7 @@ void CA_RLEWexpand (word *source, word *dest, int32_t length, word rlewtag)
 
 void CAL_SetupGrFile (void)
 {
-    char fname[13 + sizeof(DATADIR)];
+    char fname[256];
     int handle;
     byte *compseg;
 
@@ -548,7 +540,7 @@ void CAL_SetupMapFile (void)
     int     i;
     int handle;
     int32_t length,pos;
-    char fname[13 + sizeof(DATADIR)];;
+    char fname[256];
 
 //
 // load maphead.ext (offsets and tileinfo for map file)
@@ -628,7 +620,7 @@ void CAL_SetupMapFile (void)
 
 void CAL_SetupAudioFile (void)
 {
-    char fname[13 + sizeof(DATADIR)];;
+    char fname[256];
 
 //
 // load audiohed.ext (offsets for audio file)

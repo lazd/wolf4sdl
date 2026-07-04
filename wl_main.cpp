@@ -104,6 +104,17 @@ int     param_mission = 0;
 boolean param_goodtimes = false;
 boolean param_ignorenumchunks = false;
 
+
+char datadir[256] = "";
+char datafilepath[512] = "";
+char gheadname[256];
+char gfilename[256];
+char gdictname[256];
+char mheadname[256];
+char mfilename[256];
+char mfilecama[256];
+char aheadname[256];
+char afilename[256];
 /*
 =============================================================================
 
@@ -1885,6 +1896,31 @@ void CheckParameters(int argc, char *argv[])
                 }
             }
         }
+        else IFARG("--datadir")
+        {
+            if(++i >= argc)
+            {
+                printf("The datadir option is missing the dir argument!\n");
+                hasError = true;
+            }
+            else
+            {
+                size_t len = strlen(argv[i]);
+                if(len + 2 > sizeof(datadir))
+                {
+                    printf("The data directory is too long!\n");
+                    hasError = true;
+                }
+                else
+                {
+                    strcpy(datadir, argv[i]);
+                    if(argv[i][len] != '/' && argv[i][len] != '\\')
+                        strcat(datadir, "/");
+                    
+                    printf("DATADIR: %s\n", datadir);
+                }
+            }
+        }
         else IFARG("--goodtimes")
             param_goodtimes = true;
         else IFARG("--ignorenumchunks")
@@ -1893,6 +1929,19 @@ void CheckParameters(int argc, char *argv[])
             showHelp = true;
         else hasError = true;
     }
+
+    if(!datadir[0])
+        snprintf(datadir, sizeof(datadir), "%s", DATADIR);
+    
+    snprintf(gheadname, sizeof(gheadname), "%svgahead.",  datadir);
+    snprintf(gfilename, sizeof(gfilename), "%svgagraph.", datadir);
+    snprintf(gdictname, sizeof(gdictname), "%svgadict.",  datadir);
+    snprintf(mheadname, sizeof(mheadname), "%smaphead.",  datadir);
+    snprintf(mfilename, sizeof(mfilename), "%smaptemp.",  datadir);
+    snprintf(mfilecama, sizeof(mfilecama), "%sgamemaps.", datadir);
+    snprintf(aheadname, sizeof(aheadname), "%saudiohed.", datadir);
+    snprintf(afilename, sizeof(afilename), "%saudiot.",   datadir);
+            
     if(hasError || showHelp)
     {
         if(hasError) printf("\n");
@@ -1929,6 +1978,7 @@ void CheckParameters(int argc, char *argv[])
             " --ignorenumchunks      Ignores the number of chunks in VGAHEAD.*\n"
             "                        (may be useful for some broken mods)\n"
             " --configdir <dir>      Directory where config file and save games are stored\n"
+            " --datadir <dir>        Directory where data files (.WL*) are stored\n"
 #if defined(_arch_dreamcast) || defined(_WIN32)
             "                        (default: current directory)\n"
 #else

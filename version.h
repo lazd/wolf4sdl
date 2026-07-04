@@ -7,6 +7,18 @@
 #define DATADIR "/usr/share/games/wolf3d/"
 #endif
 
+extern char datadir[256];
+extern char datafilepath[512];
+
+extern char gheadname[256];
+extern char gfilename[256];
+extern char gdictname[256];
+extern char mheadname[256];
+extern char mfilename[256];
+extern char mfilecama[256];
+extern char aheadname[256];
+extern char afilename[256];
+
 /* Defines used for different versions */
 
 //#define SPEAR
