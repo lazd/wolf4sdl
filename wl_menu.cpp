@@ -4582,12 +4582,16 @@ CheckForEpisodes (void)
 //
 #ifdef JAPAN
 #ifdef JAPDEMO
-    if(!stat(DATADIR "vswap.wj1", &statbuf))
+    snprintf(datafilepath, sizeof(datafilepath), "%svswap.wj1", datadir);
+
+    if(!stat(datafilepath, &statbuf))
     {
         strcpy (extension, "wj1");
         numEpisodesMissing = 5;
 #else
-    if(!stat(DATADIR "vswap.wj6", &statbuf))
+    snprintf(datafilepath, sizeof(datafilepath), "%svswap.wj6", datadir);
+
+    if(!stat(datafilepath, &statbuf))
     {
         strcpy (extension, "wj6");
 #endif
@@ -4607,16 +4611,20 @@ CheckForEpisodes (void)
 // ENGLISH
 //
 #ifdef UPLOAD
-    if(!stat(DATADIR "vswap.wl1", &statbuf))
+    snprintf(datafilepath, sizeof(datafilepath), "%svswap.wl1", datadir);
+
+    if (!stat(datafilepath, &statbuf))
     {
-        strcpy (extension, "wl1");
+        strcpy(extension, "wl1");
         numEpisodesMissing = 5;
     }
     else
         Quit ("NO WOLFENSTEIN 3-D DATA FILES to be found!");
 #else
 #ifndef SPEAR
-    if(!stat(DATADIR "vswap.wl6", &statbuf))
+    snprintf(datafilepath, sizeof(datafilepath), "%svswap.wl6", datadir);
+
+    if(!stat(datafilepath, &statbuf))
     {
         strcpy (extension, "wl6");
         NewEmenu[2].active =
@@ -4629,7 +4637,9 @@ CheckForEpisodes (void)
     }
     else
     {
-        if(!stat(DATADIR "vswap.wl3", &statbuf))
+        snprintf(datafilepath, sizeof(datafilepath), "%svswap.wl3", datadir);
+
+        if(!stat(datafilepath, &statbuf))
         {
             strcpy (extension, "wl3");
             numEpisodesMissing = 3;
@@ -4637,7 +4647,9 @@ CheckForEpisodes (void)
         }
         else
         {
-            if(!stat(DATADIR "vswap.wl1", &statbuf))
+            snprintf(datafilepath, sizeof(datafilepath), "%svswap.wl1", datadir);
+
+            if(!stat(datafilepath, &statbuf))
             {
                 strcpy (extension, "wl1");
                 numEpisodesMissing = 5;
@@ -4654,28 +4666,39 @@ CheckForEpisodes (void)
 #ifndef SPEARDEMO
     if(param_mission == 0)
     {
-        if(!stat(DATADIR "vswap.sod", &statbuf))
+        snprintf(datafilepath, sizeof(datafilepath), "%svswap.sod", datadir);
+        printf('%s\n', datadir);
+        if(!stat(datafilepath, &statbuf))
             strcpy (extension, "sod");
         else
             Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
     }
     else if(param_mission == 1)
     {
-        if(!stat(DATADIR "vswap.sd1", &statbuf))
+        snprintf(datafilepath, sizeof(datafilepath), "%svswap.sd1", datadir);
+        printf('%s\n', datadir);
+
+        if(!stat(datafilepath, &statbuf))
             strcpy (extension, "sd1");
         else
             Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
     }
     else if(param_mission == 2)
     {
-        if(!stat(DATADIR "vswap.sd2", &statbuf))
+        snprintf(datafilepath, sizeof(datafilepath), "%svswap.sd2", datadir);
+        printf('%s\n', datadir);
+
+        if(!stat(datafilepath, &statbuf))
             strcpy (extension, "sd2");
         else
             Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
     }
     else if(param_mission == 3)
     {
-        if(!stat(DATADIR "vswap.sd3", &statbuf))
+        snprintf(datafilepath, sizeof(datafilepath), "%svswap.sd3", datadir);
+        printf('%s\n', datadir);
+
+        if(!stat(datafilepath, &statbuf))
             strcpy (extension, "sd3");
         else
             Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
@@ -4685,7 +4708,10 @@ CheckForEpisodes (void)
     strcpy (graphext, "sod");
     strcpy (audioext, "sod");
 #else
-    if(!stat(DATADIR "vswap.sdm", &statbuf))
+    snprintf(datafilepath, sizeof(datafilepath), "%svswap.sdm", datadir);
+    printf('%s\n', datadir);
+
+    if(!stat(datafilepath, &statbuf))
     {
         strcpy (extension, "sdm");
     }
